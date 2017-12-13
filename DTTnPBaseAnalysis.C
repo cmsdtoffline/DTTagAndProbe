@@ -195,7 +195,9 @@ vector<std::pair<Int_t,Int_t>> DTTnPBaseAnalysis::tnpSelection()
 			       0.106);
 	      
 	      bool probeQuality =
-		Mu_isMuTracker->at(iProbe) == 1   && 
+		(Mu_isMuTrackerArb->at(iProbe) == 1 ||
+		 (Mu_isMuRPC->at(iProbe) == 1       && 
+		  Mu_numberOfRPCLayers_rpc->at(iProbe) >= m_tnpConfig.probe_minRPCLayers)) &&
 		Mu_origAlgo_trk->at(iProbe) != 14 && // the track is not created out of a STA mu based seeding
 		Mu_numberOfPixelHits_glb->at(iProbe)   >= m_tnpConfig.probe_minPixelHits &&
 		Mu_numberOfTrackerHits_glb->at(iProbe) >= m_tnpConfig.probe_minTrkLayers &&
@@ -254,7 +256,7 @@ std::bitset<4> DTTnPBaseAnalysis::hasMatchedCh(const Int_t iMu)
 
   std::bitset<4> matchedCh(std::string("0000"));
 
-  for (Int_t iMatch = 0; iMatch < Mu_nMatches->at(iMu); ++ iMatch)
+  for (Int_t iMatch = 0; iMatch < Mu_nMatches->at(iMu); ++iMatch)
     {
       Int_t whMu  = getXY<Int_t>(Mu_matches_Wh,iMu,iMatch);
       Int_t secMu = getXY<Int_t>(Mu_matches_Sec,iMu,iMatch);
@@ -274,7 +276,8 @@ std::bitset<4> DTTnPBaseAnalysis::hasMatchedCh(const Int_t iMu)
 	  if(whMu  == whSeg  && 
 	     secMu == secSeg && 
 	     stMu  == stSeg  &&
-	     std::abs(xMu-xSeg) < 3.)
+	     std::abs(xMu-xSeg) < m_tnpConfig.probe_maxTkSegDx &&
+	     std::abs(yMu-ySeg) < m_tnpConfig.probe_maxTkSegDy)
 	    {
 	      matchedCh.set(stMu-1,1);
 	    }

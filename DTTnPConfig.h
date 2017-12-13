@@ -67,7 +67,16 @@ class TagAndProbeConfig
   
   Float_t probe_isoCut;
   Int_t   probe_minTrkLayers;      
-  Int_t   probe_minPixelHits;      
+  Int_t   probe_minPixelHits;
+
+  Float_t probe_maxTkSegDx;
+  Float_t probe_maxTkSegDy;
+  Float_t probe_minNMatchedSeg;
+  Int_t   probe_minRPCLayers;      
+
+  Float_t passing_probe_maxTkSegDx;
+  Float_t passing_probe_maxTkSegDy;
+  Float_t passing_probe_maxTkSegDr;
   
   std::string hlt_path; 
   

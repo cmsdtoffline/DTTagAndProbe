@@ -111,7 +111,7 @@ void DTTnPSegmentEff::fill(const Int_t iMu)
       for (Int_t iOtherCh = 1; iOtherCh < 5; ++iOtherCh)
 	nMatchInOtherCh +=  iCh != iOtherCh ? matchedCh[iOtherCh-1] : 0;
 
-      if (nMatchInOtherCh > 0)
+      if (nMatchInOtherCh >= m_tnpConfig.probe_minNMatchedSeg)
 	{
 	  Int_t iPassingSeg = getPassingProbe(iMu,iCh);
 	  
@@ -139,6 +139,8 @@ Int_t DTTnPSegmentEff::getPassingProbe(const Int_t iMu,
 
   Int_t iBestSeg   = -1;
   Float_t bestSegDr = 999.;	  
+  Float_t bestSegDx = 999.;	  
+  Float_t bestSegDy = 999.;	  
 	  
   for (Int_t iMatch = 0; iMatch < Mu_nMatches->at(iMu); ++ iMatch)
     {
@@ -160,16 +162,22 @@ Int_t DTTnPSegmentEff::getPassingProbe(const Int_t iMu,
 	      Float_t xSeg = dtsegm4D_x_pos_loc->at(iSeg); 
 	      Float_t ySeg = dtsegm4D_x_pos_loc->at(iSeg);
 
-	      Float_t dR = sqrt((xSeg-xMu)*(xSeg-xMu) + (ySeg-yMu)*(ySeg-yMu));
+	      Float_t dX = std::abs(xSeg-xMu);
+	      Float_t dY = std::abs(ySeg-yMu);
+	      Float_t dR = sqrt(dX*dX + dY*dY);
 
 	      if(whMu  == whSeg  && 
 		 secMu == secSeg && 
 		 stMu  == stSeg  &&
 		 dR < bestSegDr  &&
-		 dR < 10)
+		 dR < m_tnpConfig.passing_probe_maxTkSegDr &&
+		 dX < m_tnpConfig.passing_probe_maxTkSegDx &&
+		 dY < m_tnpConfig.passing_probe_maxTkSegDy )
 		{
 		  iBestSeg = iSeg;
 		  bestSegDr = dR;
+		  bestSegDx = dX;
+		  bestSegDy = dY;
 		}
 	    }
 	}
