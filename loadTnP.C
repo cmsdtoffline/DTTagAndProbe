@@ -1,0 +1,12 @@
+#include <string>
+#include "TROOT.h"
+
+void loadSegmentTnP()
+{
+
+  gROOT->ProcessLine(".L DTAnalyzer.C++");
+  gROOT->ProcessLine(".L DTTnPConfig.C++");
+  gROOT->ProcessLine(".L DTTnPBaseAnalysis.C++");
+  gROOT->ProcessLine(".L DTTnPSegmentEff.C++");
+
+}
