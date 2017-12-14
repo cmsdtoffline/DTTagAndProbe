@@ -68,6 +68,10 @@ void DTTnPSegmentEff::book()
 
   DTTnPBaseAnalysis::book();
 
+  m_plots["nOtherMatchedChVsEta"] = new TH2F("nOtherMatchedChVsEta",
+					     "# of matched stations other than the one under investigation",
+					     96,-1.2,1.2,5,-0.5,4.5);
+
 
   for (Int_t iCh = 1; iCh < 5; ++iCh)
     {
@@ -110,6 +114,8 @@ void DTTnPSegmentEff::fill(const Int_t iMu)
 
       for (Int_t iOtherCh = 1; iOtherCh < 5; ++iOtherCh)
 	nMatchInOtherCh +=  iCh != iOtherCh ? matchedCh[iOtherCh-1] : 0;
+
+      m_plots["nOtherMatchedChVsEta"]->Fill(Mu_eta->at(iMu),nMatchInOtherCh);
 
       if (nMatchInOtherCh >= m_tnpConfig.probe_minNMatchedSeg)
 	{
