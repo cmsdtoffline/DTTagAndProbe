@@ -16,6 +16,19 @@
 #include <boost/property_tree/exceptions.hpp>
 #include <boost/lexical_cast.hpp>
 
+class DTChambId
+{
+
+ public:
+  Int_t m_sector;
+  Int_t m_station;
+  Int_t m_wheel;
+  
+};
+
+bool operator < (const DTChambId & first,
+		 const DTChambId & second) const;
+
 class SampleConfig 
 {
 
@@ -69,17 +82,21 @@ class TagAndProbeConfig
   Int_t   probe_minTrkLayers;      
   Int_t   probe_minPixelHits;
 
+  Float_t probe_maxBorderDx;
+  Float_t probe_maxBorderDy;
+
   Float_t probe_maxTkSegDx;
   Float_t probe_maxTkSegDy;
   Float_t probe_minNMatchedSeg;
-  Int_t   probe_minRPCLayers;      
+  Int_t   probe_minRPCLayers;
 
+  std::string passing_probe_algo;
   Float_t passing_probe_maxTkSegDx;
   Float_t passing_probe_maxTkSegDy;
   Float_t passing_probe_maxTkSegDr;
   
-  std::string hlt_path; 
-  
+  std::string hlt_path;
+
   TagAndProbeConfig() {};
   
 #ifndef __MAKECINT__ // CB CINT doesn't like boost :'-(    

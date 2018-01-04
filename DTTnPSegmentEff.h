@@ -29,6 +29,17 @@ class DTTnPSegmentEff : public DTTnPBaseAnalysis
   Int_t getPassingProbe(const Int_t iMu,
 			const Int_t iCh);
 
+  Int_t getPassingProbeInCh(const Int_t iMu,
+			    const Int_t iCh,
+			    Int_t & probeSec,
+			    Int_t & probeWh);
+
+  Int_t getPassingProbeInCh(const Int_t iMu,
+			    const Int_t muSt,
+			    const Int_t muSec,
+			    const Int_t muWh,
+			    const Int_t xMu,
+			    const Int_t yMu);
 };
 
 #endif
