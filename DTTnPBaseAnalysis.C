@@ -110,7 +110,6 @@ void DTTnPBaseAnalysis::Loop()
       for(const auto & pair : tnpPairs) 
 	{ 
 
-	  hasMatchedCh(pair.second);
 	  fill(pair.second);
 
 	}
@@ -180,8 +179,8 @@ vector<std::pair<Int_t,Int_t>> DTTnPBaseAnalysis::tnpSelection()
 	Mu_isMuTrackerArb->at(iTag) == 1 &&
 	Mu_normchi2_glb->at(iTag)      < 10 &&
 	Mu_numberOfHits_sta->at(iTag)        > 0  && 
-	Mu_numberOfPixelHits_glb->at(iTag)   >= 1 &&
-	Mu_numberOfTrackerHits_glb->at(iTag) >= 6 &&
+	Mu_numberOfPixelHits_trk->at(iTag)   >= 1 &&
+	Mu_numberOfTrackerLayers_trk->at(iTag) >= 6 &&
 	Mu_tkIsoR03_glb->at(iTag) / tagVec.Pt() < m_tnpConfig.tag_isoCut &&
 	tagVec.Pt() > m_tnpConfig.tag_minPt ;
       
@@ -201,13 +200,11 @@ vector<std::pair<Int_t,Int_t>> DTTnPBaseAnalysis::tnpSelection()
 			       0.106);
 	      
 	      bool probeQuality =
-		(Mu_isMuTrackerArb->at(iProbe) == 1 ||
-		 (Mu_isMuRPC->at(iProbe) == 1       && 
-		  Mu_numberOfRPCLayers_rpc->at(iProbe) >= m_tnpConfig.probe_minRPCLayers)) &&
+		(Mu_isMuTrackerArb->at(iProbe) == 1) &&
 		Mu_origAlgo_trk->at(iProbe) != 14 && // the track is not created out of a STA mu based seeding
-		Mu_numberOfPixelHits_glb->at(iProbe)   >= m_tnpConfig.probe_minPixelHits &&
-		Mu_numberOfTrackerHits_glb->at(iProbe) >= m_tnpConfig.probe_minTrkLayers &&
-		Mu_tkIsoR03_glb->at(iProbe) / probeVec.Pt() < m_tnpConfig.probe_isoCut &&
+		Mu_numberOfPixelHits_trk->at(iProbe)     >= m_tnpConfig.probe_minPixelHits &&
+		Mu_numberOfTrackerLayers_trk->at(iProbe) >= m_tnpConfig.probe_minTrkLayers &&
+		Mu_tkIsoR03_trk->at(iProbe) / probeVec.Pt() < m_tnpConfig.probe_isoCut &&
 		std::abs(probeVec.Eta()) < m_tnpConfig.probe_maxAbsEta &&
 		probeVec.Pt() > m_tnpConfig.probe_minPt;
 
@@ -260,41 +257,18 @@ bool DTTnPBaseAnalysis::hasTrigger(const Int_t iTag)
   
 }
 
-std::bitset<4> DTTnPBaseAnalysis::hasMatchedCh(const Int_t iMu) 
+Int_t DTTnPBaseAnalysis::nMatchedCh(const Int_t iMu,
+				    const Int_t iCh) 
 {
 
-  std::bitset<4> matchedCh(std::string("0000"));
+  Int_t nMatchedCh = 0;
+  UInt_t chMask = Mu_stationMask->at(iMu);
 
-  for (Int_t iMatch = 0; iMatch < Mu_nMatches->at(iMu); ++iMatch)
-    {
-      Int_t whMu  = getXY<Int_t>(Mu_matches_Wh,iMu,iMatch);
-      Int_t secMu = getXY<Int_t>(Mu_matches_Sec,iMu,iMatch);
-      Int_t stMu  = getXY<Int_t>(Mu_matches_St,iMu,iMatch);
-      Float_t xMu = getXY<Float_t>(Mu_matches_x,iMu,iMatch); 
-      Float_t yMu = getXY<Float_t>(Mu_matches_x,iMu,iMatch); 
+  for(int index = 0; index < 8; ++index)
+    if ((chMask & 1<<index) && index != iCh-1)
+      ++nMatchedCh;
 
-      for (Int_t iSeg = 0; iSeg < Ndtsegments; ++ iSeg)
-	{
-	  
-	  Int_t whSeg  = dtsegm4D_wheel->at(iSeg);
-	  Int_t secSeg = dtsegm4D_sector->at(iSeg);
-	  Int_t stSeg  = dtsegm4D_station->at(iSeg);
-	  Float_t xSeg = dtsegm4D_x_pos_loc->at(iSeg); 
-	  Float_t ySeg = dtsegm4D_x_pos_loc->at(iSeg);
-
-	  if(whMu  == whSeg  && 
-	     secMu == secSeg && 
-	     stMu  == stSeg  &&
-	     std::abs(xMu-xSeg) < m_tnpConfig.probe_maxTkSegDx &&
-	     std::abs(yMu-ySeg) < m_tnpConfig.probe_maxTkSegDy)
-	    {
-	      matchedCh.set(stMu-1,1);
-	    }
-	  
-	}
-      
-    }
-
-  return matchedCh;
+  return nMatchedCh;
   
 }
+

@@ -36,8 +36,8 @@ class DTTnPBaseAnalysis : public DTAnalyzer
   
   bool hasTrigger(const Int_t iTag);
 
-  std::bitset<4> hasMatchedCh(const Int_t iMu);
-  
+  Int_t nMatchedCh(const Int_t iMu, const Int_t iCh);  
+
   virtual void fill(Int_t iMu) { };
   virtual void book();
   

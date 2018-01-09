@@ -145,6 +145,7 @@ void DTAnalyzer::Init(TTree *tree)
    Mu_numberOfChambers_sta = 0;
    Mu_numberOfMatches_sta = 0;
    Mu_numberOfMatchedStations = 0;
+   Mu_stationMask = 0;
    Mu_px = 0;
    Mu_py = 0;
    Mu_pz = 0;
@@ -375,6 +376,7 @@ void DTAnalyzer::Init(TTree *tree)
    fChain->SetBranchAddress("Mu_nMatches", &Mu_nMatches, &b_Mu_nMatches);
    fChain->SetBranchAddress("Mu_numberOfChambers_sta", &Mu_numberOfChambers_sta, &b_Mu_numberOfChambers_sta);
    fChain->SetBranchAddress("Mu_numberOfMatches_sta", &Mu_numberOfMatches_sta, &b_Mu_numberOfMatches_sta);
+   fChain->SetBranchAddress("Mu_stationMask", &Mu_stationMask, &b_Mu_stationMask);
    fChain->SetBranchAddress("Mu_numberOfMatchedStations", &Mu_numberOfMatchedStations, &b_Mu_numberOfMatchedStations);
    fChain->SetBranchAddress("Mu_px", &Mu_px, &b_Mu_px);
    fChain->SetBranchAddress("Mu_py", &Mu_py, &b_Mu_py);

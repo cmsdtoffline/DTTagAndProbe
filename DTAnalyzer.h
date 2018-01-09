@@ -135,6 +135,7 @@ public :
    vector<int>     *Mu_nMatches;
    vector<int>     *Mu_numberOfChambers_sta;
    vector<int>     *Mu_numberOfMatches_sta;
+   vector<unsigned int> *Mu_stationMask;
    vector<int>     *Mu_numberOfMatchedStations;
    vector<float>   *Mu_px;
    vector<float>   *Mu_py;
@@ -379,6 +380,7 @@ public :
    TBranch        *b_Mu_nMatches;   //!
    TBranch        *b_Mu_numberOfChambers_sta;   //!
    TBranch        *b_Mu_numberOfMatches_sta;   //!
+   TBranch        *b_Mu_stationMask;   //!
    TBranch        *b_Mu_numberOfMatchedStations;   //!
    TBranch        *b_Mu_px;   //!
    TBranch        *b_Mu_py;   //!

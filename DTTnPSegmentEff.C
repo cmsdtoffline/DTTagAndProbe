@@ -82,20 +82,39 @@ void DTTnPSegmentEff::book()
       m_effs[hName.c_str()] = new TEfficiency(hName.c_str(),
 					      "segment efficiency vs #eta;muon #eta;Efficiency",
 					      96,-1.2,1.2);
-      hName = "effVsPhi" + iChTag.str();
+      hName = "effVsPhiPlus" + iChTag.str();
       m_effs[hName.c_str()] = new TEfficiency(hName.c_str(),
-					      "segment efficiency vs #phi;muon #phi;Efficiency",
-					      96,-TMath::Pi(),TMath::Pi());
+                                              "segment efficiency vs #phi for mu^{+};muon #phi;Efficiency",
+                                              96,-TMath::Pi(),TMath::Pi());
 
-      hName = "effPhiVsEta" + iChTag.str();
+      hName = "effVsPhiMinus" + iChTag.str();
       m_effs[hName.c_str()] = new TEfficiency(hName.c_str(),
-					      "segment efficiency #phi vs #eta;muon #phi;muon #eta",
-					      96,-TMath::Pi(),TMath::Pi(),96,-1.2,1.2);
+                                              "segment efficiency vs #phi for mu^{-};muon #phi;Efficiency",
+                                              96,-TMath::Pi(),TMath::Pi());
+
+      hName = "effPhiVsEtaPlus" + iChTag.str();
+      m_effs[hName.c_str()] = new TEfficiency(hName.c_str(),
+                                              "segment efficiency #phi vs #eta for mu^{+};muon #phi;muon #eta",
+                                              96,-TMath::Pi(),TMath::Pi(),96,-1.2,1.2);
+
+      hName = "effPhiVsEtaMinus" + iChTag.str();
+      m_effs[hName.c_str()] = new TEfficiency(hName.c_str(),
+                                              "segment efficiency #phi vs #eta for mu^{+};muon #phi;muon #eta",
+                                              96,-TMath::Pi(),TMath::Pi(),96,-1.2,1.2);
 
       hName = "effVsPt" + iChTag.str();
       m_effs[hName.c_str()] = new TEfficiency(hName.c_str(),
 					      "segment efficiency vs p_{T};muon p_{T};Efficiency",
 					      100,0.,200.);
+
+      hName = "effSecVsWh" + iChTag.str();
+      m_effs[hName.c_str()] = new TEfficiency(hName.c_str(),
+                                              "segment efficiency sector vs wheel;sector;wheel",
+                                              14,0.5,14.5,5,-2,2);
+      hName = "effChamb" + iChTag.str();
+      m_effs[hName.c_str()] = new TEfficiency(hName.c_str(),
+                                              "segment efficiency chamber summary;efficiency;# chambers",
+                                              200,0.,1.);
     }
  
 }
@@ -103,17 +122,12 @@ void DTTnPSegmentEff::book()
 void DTTnPSegmentEff::fill(const Int_t iMu)
 {
 
-  std::bitset<4> matchedCh = DTTnPBaseAnalysis::hasMatchedCh(iMu);
-
-  for (Int_t iCh = 1; iCh < 5; ++iCh)
+   for (Int_t iCh = 1; iCh < 5; ++iCh)
     {
       std::stringstream iChTag;
       iChTag << "MB" << iCh;
 
-      Int_t nMatchInOtherCh = 0;
-
-      for (Int_t iOtherCh = 1; iOtherCh < 5; ++iOtherCh)
-	nMatchInOtherCh +=  iCh != iOtherCh ? matchedCh[iOtherCh-1] : 0;
+      Int_t nMatchInOtherCh = DTTnPBaseAnalysis::nMatchedCh(iMu,iCh);
 
       m_plots["nOtherMatchedChVsEta"]->Fill(Mu_eta->at(iMu),nMatchInOtherCh);
 
@@ -123,17 +137,29 @@ void DTTnPSegmentEff::fill(const Int_t iMu)
 	  
 	  std::string hName = "effVsEta" + iChTag.str();
 	  m_effs[hName]->Fill(iPassingSeg >= 0,Mu_eta->at(iMu));
+
+	  if (Mu_charge->at(iMu) == 1)
+            {
+              hName = "effVsPhiPlus" + iChTag.str();
+              m_effs[hName]->Fill(iPassingSeg >= 0,Mu_phi->at(iMu));
+              hName = "effPhiVsEtaPlus" + iChTag.str();
+              m_effs[hName]->Fill(iPassingSeg >= 0,Mu_phi->at(iMu),Mu_eta->at(iMu));
+            }
+
+          if (Mu_charge->at(iMu) == -1)
+            {
+              hName = "effVsPhiMinus" + iChTag.str();
+              m_effs[hName]->Fill(iPassingSeg >= 0,Mu_phi->at(iMu));
+              hName = "effPhiVsEtaMinus" + iChTag.str();
+              m_effs[hName]->Fill(iPassingSeg >= 0,Mu_phi->at(iMu),Mu_eta->at(iMu));
+            }
+
+          hName = "effVsPt" + iChTag.str();
+          m_effs[hName]->Fill(iPassingSeg >= 0,
+                              sqrt((Mu_px->at(iMu) * Mu_px->at(iMu)) +
+                                   (Mu_py->at(iMu) * Mu_py->at(iMu))));
+
 	  
-	  hName = "effVsPhi" + iChTag.str();
-	  m_effs[hName]->Fill(iPassingSeg >= 0,Mu_phi->at(iMu));
-	  
-	  hName = "effPhiVsEta" + iChTag.str();
-	  m_effs[hName]->Fill(iPassingSeg >= 0,Mu_phi->at(iMu),Mu_eta->at(iMu));
-	  
-	  hName = "effVsPt" + iChTag.str();
-	  m_effs[hName]->Fill(iPassingSeg >= 0,
-			      sqrt((Mu_px->at(iMu) * Mu_px->at(iMu)) +
-				   (Mu_py->at(iMu) * Mu_py->at(iMu))));
 	}
     }
 
@@ -145,8 +171,6 @@ Int_t DTTnPSegmentEff::getPassingProbe(const Int_t iMu,
 
   Int_t iBestSeg   = -1;
   Float_t bestSegDr = 999.;	  
-  Float_t bestSegDx = 999.;	  
-  Float_t bestSegDy = 999.;	  
 	  
   for (Int_t iMatch = 0; iMatch < Mu_nMatches->at(iMu); ++ iMatch)
     {
@@ -182,8 +206,6 @@ Int_t DTTnPSegmentEff::getPassingProbe(const Int_t iMu,
 		{
 		  iBestSeg = iSeg;
 		  bestSegDr = dR;
-		  bestSegDx = dX;
-		  bestSegDy = dY;
 		}
 	    }
 	}
