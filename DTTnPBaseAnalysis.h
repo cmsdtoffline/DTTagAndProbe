@@ -38,8 +38,9 @@ class DTTnPBaseAnalysis : public DTAnalyzer
 
   Int_t nMatchedCh(const Int_t iMu, const Int_t iCh);  
 
-  virtual void fill(Int_t iMu) { };
   virtual void book();
+  virtual void fill(Int_t iMu) { };
+  virtual void endJob() { };
   
   TagAndProbeConfig m_tnpConfig;
   SampleConfig      m_sampleConfig;

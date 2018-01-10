@@ -7,15 +7,7 @@ DTAnalyzer::DTAnalyzer(TTree *tree) : fChain(0)
 {
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.
-   if (tree == 0) {
-      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("DTNtuple.root");
-      if (!f || !f->IsOpen()) {
-         f = new TFile("DTNtuple.root");
-      }
-      f->GetObject("DTTree",tree);
-
-   }
-   Init(tree);
+  Init(tree);
 }
 
 DTAnalyzer::~DTAnalyzer()
@@ -175,6 +167,7 @@ void DTAnalyzer::Init(TTree *tree)
    Mu_dz_trk = 0;
    Mu_numberOfPixelHits_trk = 0;
    Mu_numberOfTrackerLayers_trk = 0;
+   Mu_tkIsoR03_trk = 0;
    Mu_algo_trk = 0;
    Mu_origAlgo_trk = 0;
    Mu_numberOfRPCLayers_rpc = 0;
@@ -407,6 +400,7 @@ void DTAnalyzer::Init(TTree *tree)
    fChain->SetBranchAddress("Mu_dz_trk", &Mu_dz_trk, &b_Mu_dz_trk);
    fChain->SetBranchAddress("Mu_numberOfPixelHits_trk", &Mu_numberOfPixelHits_trk, &b_Mu_numberOfPixelHits_trk);
    fChain->SetBranchAddress("Mu_numberOfTrackerLayers_trk", &Mu_numberOfTrackerLayers_trk, &b_Mu_numberOfTrackerLayers_trk);
+   fChain->SetBranchAddress("Mu_tkIsoR03_trk", &Mu_tkIsoR03_trk, &b_Mu_tkIsoR03_trk);
    fChain->SetBranchAddress("Mu_algo_trk", &Mu_algo_trk, &b_Mu_algo_trk);
    fChain->SetBranchAddress("Mu_origAlgo_trk", &Mu_origAlgo_trk, &b_Mu_origAlgo_trk);
    fChain->SetBranchAddress("Mu_numberOfRPCLayers_rpc", &Mu_numberOfRPCLayers_rpc, &b_Mu_numberOfRPCLayers_rpc);

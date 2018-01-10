@@ -19,6 +19,9 @@ void DTTnPSegmentEff::Loop()
 		       fChain->GetEntriesFast() > m_sampleConfig.nEvents) ? 
                        m_sampleConfig.nEvents : fChain->GetEntriesFast();
 
+  std::cout << "[DTTnPSegmentEff::Loop] going to process "
+	    << nentries << " entries\n" << std::flush;
+
   Long64_t nbytes = 0, nb = 0;
   for (Long64_t jentry=0; jentry<nentries;jentry++) 
     {
@@ -57,7 +60,10 @@ void DTTnPSegmentEff::Loop()
 
     }
 
-  std::cout << std::endl; 
+  std::cout << std::endl;
+  
+  endJob();
+
   outputFile.Write();
   outputFile.Close();
 
@@ -107,14 +113,24 @@ void DTTnPSegmentEff::book()
 					      "segment efficiency vs p_{T};muon p_{T};Efficiency",
 					      100,0.,200.);
 
+      hName = "effVsLumi" + iChTag.str();
+      m_effs[hName.c_str()] = new TEfficiency(hName.c_str(),
+					      "segment efficiency vs inst. lumi.;inst. lumi.;Efficiency",
+					      200,0.,20000.);
+
+      hName = "effVsNHitsPhi" + iChTag.str();
+      m_effs[hName.c_str()] = new TEfficiency(hName.c_str(),
+					      "segment efficiency vs # phi hits.; # phi hits;Efficiency",
+					      9,-0.5,8.5);
+
       hName = "effSecVsWh" + iChTag.str();
       m_effs[hName.c_str()] = new TEfficiency(hName.c_str(),
                                               "segment efficiency sector vs wheel;sector;wheel",
-                                              14,0.5,14.5,5,-2,2);
+                                              14,0.5,14.5,5,-2.5,2.5);
       hName = "effChamb" + iChTag.str();
-      m_effs[hName.c_str()] = new TEfficiency(hName.c_str(),
-                                              "segment efficiency chamber summary;efficiency;# chambers",
-                                              200,0.,1.);
+      m_plots[hName.c_str()] = new TH1F(hName.c_str(),
+					"segment efficiency chamber summary;efficiency;# chambers",
+					400,0.,1.);
     }
  
 }
@@ -159,10 +175,73 @@ void DTTnPSegmentEff::fill(const Int_t iMu)
                               sqrt((Mu_px->at(iMu) * Mu_px->at(iMu)) +
                                    (Mu_py->at(iMu) * Mu_py->at(iMu))));
 
-	  
-	}
-    }
+	  for (Int_t iMatch = 0; iMatch < Mu_nMatches->at(iMu); ++iMatch)
+	    {
+	      Int_t whMu  = getXY<Int_t>(Mu_matches_Wh,iMu,iMatch);
+	      Int_t secMu = getXY<Int_t>(Mu_matches_Sec,iMu,iMatch);
+	      Int_t stMu  = getXY<Int_t>(Mu_matches_St,iMu,iMatch);
+	      Float_t xMu = getXY<Float_t>(Mu_matches_x,iMu,iMatch);
+	      Float_t yMu = getXY<Float_t>(Mu_matches_y,iMu,iMatch);
 
+	      Float_t xBorderMu = getXY<Float_t>(Mu_matches_edgeX,iMu,iMatch);
+	      Float_t yBorderMu = getXY<Float_t>(Mu_matches_edgeY,iMu,iMatch);
+
+	      if (stMu == iCh &&
+		  xBorderMu < m_tnpConfig.probe_maxBorderDx &&
+		  yBorderMu < m_tnpConfig.probe_maxBorderDy )
+		{ 
+		  
+		  iPassingSeg =  getPassingProbeInCh(iMu,stMu,secMu,whMu,xMu,yMu);
+		  
+		  hName = "effSecVsWh" + iChTag.str();
+		  m_effs[hName]->Fill(iPassingSeg >= 0,secMu,whMu);
+
+		  hName = "effVsLumi" + iChTag.str();
+		  m_effs[hName]->Fill(iPassingSeg >= 0,lumiperblock);
+
+		  hName = "effVsNHitsPhi" + iChTag.str();
+		  Int_t nPhiHits = iPassingSeg >= 0 ? dtsegm4D_phinhits->at(iPassingSeg) : 0;
+
+		  for (Int_t phiHits = 0; phiHits < 9; ++phiHits)
+		    m_effs[hName]->Fill(nPhiHits >= phiHits, phiHits);
+
+		}
+
+	    }
+
+	}
+
+    }
+   
+}
+
+void DTTnPSegmentEff::endJob() 
+{
+
+  for (Int_t iCh = 1; iCh < 5; ++iCh)
+    {
+      std::stringstream iChTag;
+      iChTag << "MB" << iCh;
+
+      for (Int_t iWh = 1; iWh < 6; ++iWh)
+	{
+
+	  for (Int_t iSec = 1; iSec < 15; ++iSec)
+	    {
+
+	      if (iSec > 12 && iCh !=4)
+		continue;
+	      
+	      std::string hName   = "effChamb" + iChTag.str();
+	      std::string effName = "effSecVsWh" + iChTag.str();
+	      m_plots[hName.c_str()]->Fill(m_effs[effName.c_str()]->GetEfficiency(m_effs[effName.c_str()]->GetGlobalBin(iSec,iWh)));
+	      
+	    }
+
+	}
+
+    }
+  
 }
 
 Int_t DTTnPSegmentEff::getPassingProbe(const Int_t iMu,
@@ -178,41 +257,76 @@ Int_t DTTnPSegmentEff::getPassingProbe(const Int_t iMu,
       Int_t secMu = getXY<Int_t>(Mu_matches_Sec,iMu,iMatch);
       Int_t stMu  = getXY<Int_t>(Mu_matches_St,iMu,iMatch);
       Float_t xMu = getXY<Float_t>(Mu_matches_x,iMu,iMatch); 
-      Float_t yMu = getXY<Float_t>(Mu_matches_x,iMu,iMatch); 
+      Float_t yMu = getXY<Float_t>(Mu_matches_y,iMu,iMatch); 
       
       if (stMu == iCh)
 	{
 	  
-	  for (Int_t iSeg = 0; iSeg < Ndtsegments; ++ iSeg)
-	    {
-	      
-	      Int_t whSeg  = dtsegm4D_wheel->at(iSeg);
-	      Int_t secSeg = dtsegm4D_sector->at(iSeg);
-	      Int_t stSeg  = dtsegm4D_station->at(iSeg);
-	      Float_t xSeg = dtsegm4D_x_pos_loc->at(iSeg); 
-	      Float_t ySeg = dtsegm4D_x_pos_loc->at(iSeg);
+	  Int_t iSeg = getPassingProbeInCh(iMu,stMu,secMu,
+					   whMu,xMu,yMu);
 
-	      Float_t dX = std::abs(xSeg-xMu);
-	      Float_t dY = std::abs(ySeg-yMu);
-	      Float_t dR = sqrt(dX*dX + dY*dY);
-
-	      if(whMu  == whSeg  && 
-		 secMu == secSeg && 
-		 stMu  == stSeg  &&
-		 dR < bestSegDr  &&
-		 dR < m_tnpConfig.passing_probe_maxTkSegDr &&
-		 dX < m_tnpConfig.passing_probe_maxTkSegDx &&
-		 dY < m_tnpConfig.passing_probe_maxTkSegDy )
-		{
-		  iBestSeg = iSeg;
-		  bestSegDr = dR;
-		}
-	    }
+	  if (iSeg < 0)
+	    continue;
+	  
+          Float_t xSeg = dtsegm4D_x_pos_loc->at(iSeg);
+          Float_t ySeg = dtsegm4D_y_pos_loc->at(iSeg);
+	  
+          Float_t dX = std::abs(xSeg-xMu);
+          Float_t dY = std::abs(ySeg-yMu);
+          Float_t dR = sqrt(dX*dX + dY*dY);
+	  
+          if(dR < bestSegDr)
+            {
+              iBestSeg = iSeg;
+              bestSegDr = dR;
+            }
+	  
 	}
       
     }
 
   return iBestSeg;
-  
+
 }
 
+
+Int_t DTTnPSegmentEff::getPassingProbeInCh(const Int_t iMu,
+					   const Int_t stMu,
+					   const Int_t secMu,
+					   const Int_t whMu,
+					   const Int_t xMu,
+					   const Int_t yMu)
+{
+  
+  Int_t iBestSeg   = -1;
+  Float_t bestSegDr = 999.;
+  
+  for (Int_t iSeg = 0; iSeg < Ndtsegments; ++ iSeg)
+    {
+      
+      Int_t whSeg  = dtsegm4D_wheel->at(iSeg);
+      Int_t secSeg = dtsegm4D_sector->at(iSeg);
+      Int_t stSeg  = dtsegm4D_station->at(iSeg);
+      Float_t xSeg = dtsegm4D_x_pos_loc->at(iSeg);
+      Float_t ySeg = dtsegm4D_y_pos_loc->at(iSeg);
+      
+      Float_t dX = std::abs(xSeg-xMu);
+      Float_t dY = std::abs(ySeg-yMu);
+      Float_t dR = sqrt(dX*dX + dY*dY);
+      
+      if(whMu  == whSeg  &&
+         secMu == secSeg &&
+         stMu  == stSeg  &&
+         dR < bestSegDr  &&
+         dR < m_tnpConfig.passing_probe_maxTkSegDr &&
+         dX < m_tnpConfig.passing_probe_maxTkSegDx &&
+	 dY < m_tnpConfig.passing_probe_maxTkSegDy )
+	{
+	  iBestSeg = iSeg;
+	  bestSegDr = dR;
+	}
+    }
+
+  return iBestSeg;
+
+}

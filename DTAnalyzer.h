@@ -166,6 +166,7 @@ public :
    vector<float>   *Mu_dz_trk;
    vector<int>     *Mu_numberOfPixelHits_trk;
    vector<int>     *Mu_numberOfTrackerLayers_trk;
+   vector<float>   *Mu_tkIsoR03_trk;
    vector<int>     *Mu_algo_trk;
    vector<int>     *Mu_origAlgo_trk;
    vector<int>     *Mu_numberOfRPCLayers_rpc;
@@ -411,6 +412,7 @@ public :
    TBranch        *b_Mu_dz_trk;   //!
    TBranch        *b_Mu_numberOfPixelHits_trk;   //!
    TBranch        *b_Mu_numberOfTrackerLayers_trk;   //!
+   TBranch        *b_Mu_tkIsoR03_trk;   //!
    TBranch        *b_Mu_algo_trk;   //!
    TBranch        *b_Mu_origAlgo_trk;   //!
    TBranch        *b_Mu_numberOfRPCLayers_rpc;   //!

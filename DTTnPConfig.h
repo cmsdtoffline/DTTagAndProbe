@@ -69,6 +69,9 @@ class TagAndProbeConfig
   Int_t   probe_minTrkLayers;      
   Int_t   probe_minPixelHits;
 
+  Float_t probe_maxBorderDx;
+  Float_t probe_maxBorderDy;
+
   Float_t probe_minNMatchedSeg;
 
   Float_t passing_probe_maxTkSegDx;

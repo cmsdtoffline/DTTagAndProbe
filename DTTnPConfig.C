@@ -58,6 +58,9 @@ TagAndProbeConfig::TagAndProbeConfig(boost::property_tree::ptree::value_type & v
       probe_minTrkLayers  = vt.second.get<Int_t>("probe_minTrkLayers");
       probe_minPixelHits  = vt.second.get<Int_t>("probe_minPixelHits");
 
+      probe_maxBorderDx = vt.second.get<Float_t>("probe_maxBorderDx");
+      probe_maxBorderDy = vt.second.get<Float_t>("probe_maxBorderDy");
+
       probe_minNMatchedSeg = vt.second.get<Int_t>("probe_minNMatchedSeg");
 
       passing_probe_maxTkSegDx = vt.second.get<Float_t>("passing_probe_maxTkSegDx");
