@@ -134,15 +134,6 @@ void DTTnPBaseAnalysis::book()
   m_plots["probePtVsPairDr"] = new TH2F("probePtVsPairDr",
 					"probe p_{T} vs tag and probe dR;probe p_{T} [GeV];tag and probe dR",
 					100,0.,1000., 100,0.,2*TMath::Pi());
-  m_plots["probePt"]  = new TH1F("probePt",
-				 "probe p_{T};p_{T} [GeV];#entries/GeV",
-				 200,0.,200.); 
-  m_plots["probeEta"] = new TH1F("probeEta",
-				"probe #eta;#eta;#entries/0.05",
-				48,1.2,1.2); 
-  m_plots["probePhi"] = new TH1F("probePhi",
-				"probe #phi;#phi;#entries/(pi*90)",
-				 180,-TMath::Pi(),TMath::Pi()); 
   m_plots["probeNPixelHits"]  = new TH1F("probeNPixelHits",
 				 "probe # pixel hits;# pixel hits;#entries",
 				 10,-0.5,9.5); 
@@ -200,14 +191,14 @@ vector<std::pair<Int_t,Int_t>> DTTnPBaseAnalysis::tnpSelection()
 			       0.106);
 	      
 	      bool probeQuality =
-		(Mu_isMuTrackerArb->at(iProbe) == 1) &&
+		( Mu_isMuTrackerArb->at(iProbe) == 1 ||
+		  Mu_isMuRPC->at(iProbe) == 1 ) &&
 		Mu_origAlgo_trk->at(iProbe) != 14 && // the track is not created out of a STA mu based seeding
 		Mu_numberOfPixelHits_trk->at(iProbe)     >= m_tnpConfig.probe_minPixelHits &&
 		Mu_numberOfTrackerLayers_trk->at(iProbe) >= m_tnpConfig.probe_minTrkLayers &&
 		Mu_tkIsoR03_trk->at(iProbe) / probeVec.Pt() < m_tnpConfig.probe_isoCut &&
-		std::abs(probeVec.Eta()) < m_tnpConfig.probe_maxAbsEta &&
 		probeVec.Pt() > m_tnpConfig.probe_minPt;
-
+	      
 	      m_plots["probeNPixelHits"]->Fill(Mu_numberOfPixelHits_glb->at(iProbe));
  	      m_plots["probeNTrkLayers"]->Fill(Mu_numberOfTrackerHits_glb->at(iProbe));
  	      m_plots["probeNRPCLayers"]->Fill(Mu_isMuRPC->at(iProbe) ?
@@ -232,10 +223,6 @@ vector<std::pair<Int_t,Int_t>> DTTnPBaseAnalysis::tnpSelection()
 		    {
 		      pairs.push_back(std::make_pair(iTag,iProbe));
 		      
-		      m_plots["probePt"]->Fill(probeVec.Pt());
-		      m_plots["probeEta"]->Fill(probeVec.Eta());
-		      m_plots["probePhi"]->Fill(probeVec.Phi());
-
 		      break; // just one probe per tag
 		    }
 		} 

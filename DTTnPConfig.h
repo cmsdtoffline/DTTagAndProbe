@@ -63,7 +63,7 @@ class TagAndProbeConfig
   std::string tag_hltFilter;
   
   Float_t probe_minPt;      
-  Float_t probe_maxAbsEta;
+  std::vector<Float_t> probe_maxAbsEta;
   
   Float_t probe_isoCut;
   Int_t   probe_minTrkLayers;      
@@ -73,6 +73,7 @@ class TagAndProbeConfig
   Float_t probe_maxBorderDy;
 
   Float_t probe_minNMatchedSeg;
+  Float_t probe_minNRPCLayers;
 
   Float_t passing_probe_maxTkSegDx;
   Float_t passing_probe_maxTkSegDy;
@@ -87,6 +88,9 @@ class TagAndProbeConfig
 #endif
   
   ~TagAndProbeConfig() {};
+
+ private:
+  std::vector<Float_t> toArray(const std::string & entries); 
   
 };
 

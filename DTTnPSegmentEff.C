@@ -84,49 +84,67 @@ void DTTnPSegmentEff::book()
       std::stringstream iChTag;
       iChTag << "MB" << iCh;
 
-      std::string hName = "effVsEta" + iChTag.str();
-      m_effs[hName.c_str()] = new TEfficiency(hName.c_str(),
-					      "segment efficiency vs #eta;muon #eta;Efficiency",
-					      96,-1.2,1.2);
-      hName = "effVsPhiPlus" + iChTag.str();
-      m_effs[hName.c_str()] = new TEfficiency(hName.c_str(),
-                                              "segment efficiency vs #phi for mu^{+};muon #phi;Efficiency",
-                                              96,-TMath::Pi(),TMath::Pi());
+      std::string hName = "probePt" + iChTag.str();
+      m_plots[hName]  = new TH1F(hName.c_str(),
+				 "probe p_{T};p_{T} [GeV];#entries/GeV",
+				 200,0.,200.); 
+      hName = "probeEta" + iChTag.str();
+      m_plots[hName] = new TH1F(hName.c_str(),
+				"probe #eta;#eta;#entries/0.05",
+				48,1.2,1.2); 
+      hName = "probePhi" + iChTag.str();
+      m_plots[hName] = new TH1F(hName.c_str(),
+				"probe #phi;#phi;#entries/(pi*90)",
+				180,-TMath::Pi(),TMath::Pi()); 
 
-      hName = "effVsPhiMinus" + iChTag.str();
-      m_effs[hName.c_str()] = new TEfficiency(hName.c_str(),
-                                              "segment efficiency vs #phi for mu^{-};muon #phi;Efficiency",
-                                              96,-TMath::Pi(),TMath::Pi());
+      hName = "effAccVsEta" + iChTag.str();
+      m_effs[hName] = new TEfficiency(hName.c_str(),
+				      "segment efficiency x acceptance vs #eta;muon #eta;Efficiency",
+				      96,-1.2,1.2);
+      hName = "effAccVsPhiPlus" + iChTag.str();
+      m_effs[hName] = new TEfficiency(hName.c_str(),
+				      "segment efficiency x acceptance vs #phi for mu^{+};muon #phi;Efficiency",
+				      96,-TMath::Pi(),TMath::Pi());
 
-      hName = "effPhiVsEtaPlus" + iChTag.str();
-      m_effs[hName.c_str()] = new TEfficiency(hName.c_str(),
-                                              "segment efficiency #phi vs #eta for mu^{+};muon #phi;muon #eta",
-                                              96,-TMath::Pi(),TMath::Pi(),96,-1.2,1.2);
+      hName = "effAccVsPhiMinus" + iChTag.str();
+      m_effs[hName] = new TEfficiency(hName.c_str(),
+				      "segment efficiency x acceptance vs #phi for mu^{-};muon #phi;Efficiency",
+				      96,-TMath::Pi(),TMath::Pi());
 
-      hName = "effPhiVsEtaMinus" + iChTag.str();
-      m_effs[hName.c_str()] = new TEfficiency(hName.c_str(),
-                                              "segment efficiency #phi vs #eta for mu^{+};muon #phi;muon #eta",
-                                              96,-TMath::Pi(),TMath::Pi(),96,-1.2,1.2);
+      hName = "effAccPhiVsEtaPlus" + iChTag.str();
+      m_effs[hName] = new TEfficiency(hName.c_str(),
+				      "segment efficiency x acceptance #phi vs #eta for mu^{+};muon #phi;muon #eta",
+				      96,-TMath::Pi(),TMath::Pi(),96,-1.2,1.2);
+
+      hName = "effAccPhiVsEtaMinus" + iChTag.str();
+      m_effs[hName] = new TEfficiency(hName.c_str(),
+				      "segment efficiency x acceptance #phi vs #eta for mu^{+};muon #phi;muon #eta",
+				      96,-TMath::Pi(),TMath::Pi(),96,-1.2,1.2);
+
+      hName = "effAccVsPt" + iChTag.str();
+      m_effs[hName] = new TEfficiency(hName.c_str(),
+				      "segment efficiency x acceptance vs p_{T};muon p_{T};Efficiency",
+				      100,0.,200.);
 
       hName = "effVsPt" + iChTag.str();
-      m_effs[hName.c_str()] = new TEfficiency(hName.c_str(),
-					      "segment efficiency vs p_{T};muon p_{T};Efficiency",
-					      100,0.,200.);
+      m_effs[hName] = new TEfficiency(hName.c_str(),
+				      "segment efficiency vs p_{T};muon p_{T};Efficiency",
+				      100,0.,200.);
 
       hName = "effVsLumi" + iChTag.str();
-      m_effs[hName.c_str()] = new TEfficiency(hName.c_str(),
-					      "segment efficiency vs inst. lumi.;inst. lumi.;Efficiency",
-					      200,0.,20000.);
+      m_effs[hName] = new TEfficiency(hName.c_str(),
+				      "segment efficiency vs inst. lumi.;inst. lumi.;Efficiency",
+				      200,0.,20000.);
 
       hName = "effVsNHitsPhi" + iChTag.str();
-      m_effs[hName.c_str()] = new TEfficiency(hName.c_str(),
-					      "segment efficiency vs # phi hits.; # phi hits;Efficiency",
-					      8,0.5,8.5);
+      m_effs[hName] = new TEfficiency(hName.c_str(),
+				      "segment efficiency vs # phi hits.; # phi hits;Efficiency",
+				      8,0.5,8.5);
 
       hName = "effSecVsWh" + iChTag.str();
-      m_effs[hName.c_str()] = new TEfficiency(hName.c_str(),
-                                              "segment efficiency sector vs wheel;sector;wheel",
-                                              14,0.5,14.5,5,-2.5,2.5);
+      m_effs[hName] = new TEfficiency(hName.c_str(),
+				      "segment efficiency sector vs wheel;sector;wheel",
+				      14,0.5,14.5,5,-2.5,2.5);
       hName = "effChamb" + iChTag.str();
       m_plots[hName.c_str()] = new TH1F(hName.c_str(),
 					"segment efficiency chamber summary;efficiency;# chambers",
@@ -138,6 +156,12 @@ void DTTnPSegmentEff::book()
 void DTTnPSegmentEff::fill(const Int_t iMu)
 {
 
+  TLorentzVector probeVec;
+  probeVec.SetXYZM(Mu_px->at(iMu),
+		   Mu_py->at(iMu),
+		   Mu_pz->at(iMu),
+		   0.106);
+
    for (Int_t iCh = 1; iCh < 5; ++iCh)
     {
       std::stringstream iChTag;
@@ -147,33 +171,43 @@ void DTTnPSegmentEff::fill(const Int_t iMu)
 
       m_plots["nOtherMatchedChVsEta"]->Fill(Mu_eta->at(iMu),nMatchInOtherCh);
 
-      if (nMatchInOtherCh >= m_tnpConfig.probe_minNMatchedSeg)
+      if ( nMatchInOtherCh >= m_tnpConfig.probe_minNMatchedSeg ||
+	   Mu_numberOfRPCLayers_rpc->at(iMu) >= m_tnpConfig.probe_minNRPCLayers )
 	{
+	  std::string hName = "probePt" + iChTag.str(); 
+	  m_plots[hName]->Fill(probeVec.Pt());
+
+	  hName = "probeEta" + iChTag.str(); 
+	  m_plots[hName]->Fill(probeVec.Eta());
+
+	  hName = "probePhi" + iChTag.str(); 
+	  m_plots[hName]->Fill(probeVec.Phi());
+	  
 	  Int_t iPassingSeg = getPassingProbe(iMu,iCh);
 	  
-	  std::string hName = "effVsEta" + iChTag.str();
+	  hName = "effAccVsEta" + iChTag.str();
 	  m_effs[hName]->Fill(iPassingSeg >= 0,Mu_eta->at(iMu));
+
+	  if (std::abs(probeVec.Eta()) > m_tnpConfig.probe_maxAbsEta[iCh - 1]) continue;	  
 
 	  if (Mu_charge->at(iMu) == 1)
             {
-              hName = "effVsPhiPlus" + iChTag.str();
+              hName = "effAccVsPhiPlus" + iChTag.str();
               m_effs[hName]->Fill(iPassingSeg >= 0,Mu_phi->at(iMu));
-              hName = "effPhiVsEtaPlus" + iChTag.str();
+              hName = "effAccPhiVsEtaPlus" + iChTag.str();
               m_effs[hName]->Fill(iPassingSeg >= 0,Mu_phi->at(iMu),Mu_eta->at(iMu));
             }
 
           if (Mu_charge->at(iMu) == -1)
             {
-              hName = "effVsPhiMinus" + iChTag.str();
+              hName = "effAccVsPhiMinus" + iChTag.str();
               m_effs[hName]->Fill(iPassingSeg >= 0,Mu_phi->at(iMu));
-              hName = "effPhiVsEtaMinus" + iChTag.str();
+              hName = "effAccPhiVsEtaMinus" + iChTag.str();
               m_effs[hName]->Fill(iPassingSeg >= 0,Mu_phi->at(iMu),Mu_eta->at(iMu));
             }
 
-          hName = "effVsPt" + iChTag.str();
-          m_effs[hName]->Fill(iPassingSeg >= 0,
-                              sqrt((Mu_px->at(iMu) * Mu_px->at(iMu)) +
-                                   (Mu_py->at(iMu) * Mu_py->at(iMu))));
+          hName = "effAccVsPt" + iChTag.str();
+          m_effs[hName]->Fill(iPassingSeg >= 0,probeVec.Pt());
 
 	  for (Int_t iMatch = 0; iMatch < Mu_nMatches->at(iMu); ++iMatch)
 	    {
@@ -192,6 +226,9 @@ void DTTnPSegmentEff::fill(const Int_t iMu)
 		{ 
 		  
 		  iPassingSeg =  getPassingProbeInCh(iMu,stMu,secMu,whMu,xMu,yMu);
+
+		  hName = "effVsPt" + iChTag.str();
+		  m_effs[hName]->Fill(iPassingSeg >= 0,probeVec.Pt());
 		  
 		  hName = "effSecVsWh" + iChTag.str();
 		  m_effs[hName]->Fill(iPassingSeg >= 0,secMu,whMu);
