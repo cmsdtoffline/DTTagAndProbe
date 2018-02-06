@@ -91,7 +91,7 @@ void DTTnPSegmentEff::book()
       hName = "probeEta" + iChTag.str();
       m_plots[hName] = new TH1F(hName.c_str(),
 				"probe #eta;#eta;#entries/0.05",
-				48,1.2,1.2); 
+				56,-1.2,1.2); 
       hName = "probePhi" + iChTag.str();
       m_plots[hName] = new TH1F(hName.c_str(),
 				"probe #phi;#phi;#entries/(pi*90)",
@@ -124,17 +124,17 @@ void DTTnPSegmentEff::book()
       hName = "effAccVsPt" + iChTag.str();
       m_effs[hName] = new TEfficiency(hName.c_str(),
 				      "segment efficiency x acceptance vs p_{T};muon p_{T};Efficiency",
-				      100,0.,200.);
+				      50,0.,200.);
 
       hName = "effVsPt" + iChTag.str();
       m_effs[hName] = new TEfficiency(hName.c_str(),
 				      "segment efficiency vs p_{T};muon p_{T};Efficiency",
-				      100,0.,200.);
+				      50,0.,200.);
 
       hName = "effVsLumi" + iChTag.str();
       m_effs[hName] = new TEfficiency(hName.c_str(),
 				      "segment efficiency vs inst. lumi.;inst. lumi.;Efficiency",
-				      200,0.,20000.);
+				      50,0.,20000.);
 
       hName = "effVsNHitsPhi" + iChTag.str();
       m_effs[hName] = new TEfficiency(hName.c_str(),
@@ -174,73 +174,84 @@ void DTTnPSegmentEff::fill(const Int_t iMu)
       if ( nMatchInOtherCh >= m_tnpConfig.probe_minNMatchedSeg ||
 	   Mu_numberOfRPCLayers_rpc->at(iMu) >= m_tnpConfig.probe_minNRPCLayers )
 	{
-	  std::string hName = "probePt" + iChTag.str(); 
-	  m_plots[hName]->Fill(probeVec.Pt());
-
-	  hName = "probeEta" + iChTag.str(); 
-	  m_plots[hName]->Fill(probeVec.Eta());
-
-	  hName = "probePhi" + iChTag.str(); 
-	  m_plots[hName]->Fill(probeVec.Phi());
-	  
 	  Int_t iPassingSeg = getPassingProbe(iMu,iCh);
 	  
-	  hName = "effAccVsEta" + iChTag.str();
+	  std::string hName = "effAccVsEta" + iChTag.str();
 	  m_effs[hName]->Fill(iPassingSeg >= 0,Mu_eta->at(iMu));
-
-	  if (std::abs(probeVec.Eta()) > m_tnpConfig.probe_maxAbsEta[iCh - 1]) continue;	  
 
 	  if (Mu_charge->at(iMu) == 1)
             {
-              hName = "effAccVsPhiPlus" + iChTag.str();
-              m_effs[hName]->Fill(iPassingSeg >= 0,Mu_phi->at(iMu));
               hName = "effAccPhiVsEtaPlus" + iChTag.str();
               m_effs[hName]->Fill(iPassingSeg >= 0,Mu_phi->at(iMu),Mu_eta->at(iMu));
             }
 
           if (Mu_charge->at(iMu) == -1)
             {
-              hName = "effAccVsPhiMinus" + iChTag.str();
-              m_effs[hName]->Fill(iPassingSeg >= 0,Mu_phi->at(iMu));
               hName = "effAccPhiVsEtaMinus" + iChTag.str();
               m_effs[hName]->Fill(iPassingSeg >= 0,Mu_phi->at(iMu),Mu_eta->at(iMu));
             }
 
-          hName = "effAccVsPt" + iChTag.str();
-          m_effs[hName]->Fill(iPassingSeg >= 0,probeVec.Pt());
-
-	  for (Int_t iMatch = 0; iMatch < Mu_nMatches->at(iMu); ++iMatch)
+	  if (std::abs(probeVec.Eta()) < m_tnpConfig.probe_maxAbsEta[iCh - 1])
 	    {
-	      Int_t whMu  = getXY<Int_t>(Mu_matches_Wh,iMu,iMatch);
-	      Int_t secMu = getXY<Int_t>(Mu_matches_Sec,iMu,iMatch);
-	      Int_t stMu  = getXY<Int_t>(Mu_matches_St,iMu,iMatch);
-	      Float_t xMu = getXY<Float_t>(Mu_matches_x,iMu,iMatch);
-	      Float_t yMu = getXY<Float_t>(Mu_matches_y,iMu,iMatch);
 
-	      Float_t xBorderMu = getXY<Float_t>(Mu_matches_edgeX,iMu,iMatch);
-	      Float_t yBorderMu = getXY<Float_t>(Mu_matches_edgeY,iMu,iMatch);
+	      hName = "probePt" + iChTag.str(); 
+	      m_plots[hName]->Fill(probeVec.Pt());
 
-	      if (stMu == iCh &&
-		  xBorderMu < m_tnpConfig.probe_maxBorderDx &&
-		  yBorderMu < m_tnpConfig.probe_maxBorderDy )
-		{ 
+	      hName = "probeEta" + iChTag.str(); 
+	      m_plots[hName]->Fill(probeVec.Eta());
+	      
+	      hName = "probePhi" + iChTag.str(); 
+	      m_plots[hName]->Fill(probeVec.Phi());
+	      
+	      if (Mu_charge->at(iMu) == 1)
+		{
+		  hName = "effAccVsPhiPlus" + iChTag.str();
+		  m_effs[hName]->Fill(iPassingSeg >= 0,Mu_phi->at(iMu));
+		}
+	      
+	      if (Mu_charge->at(iMu) == -1)
+		{
+		  hName = "effAccVsPhiMinus" + iChTag.str();
+		  m_effs[hName]->Fill(iPassingSeg >= 0,Mu_phi->at(iMu));
+		}
+	      
+	      hName = "effAccVsPt" + iChTag.str();
+	      m_effs[hName]->Fill(iPassingSeg >= 0,probeVec.Pt());
+	      
+	      for (Int_t iMatch = 0; iMatch < Mu_nMatches->at(iMu); ++iMatch)
+		{
+		  Int_t whMu  = getXY<Int_t>(Mu_matches_Wh,iMu,iMatch);
+		  Int_t secMu = getXY<Int_t>(Mu_matches_Sec,iMu,iMatch);
+		  Int_t stMu  = getXY<Int_t>(Mu_matches_St,iMu,iMatch);
+		  Float_t xMu = getXY<Float_t>(Mu_matches_x,iMu,iMatch);
+		  Float_t yMu = getXY<Float_t>(Mu_matches_y,iMu,iMatch);
 		  
-		  iPassingSeg =  getPassingProbeInCh(iMu,stMu,secMu,whMu,xMu,yMu);
-
-		  hName = "effVsPt" + iChTag.str();
-		  m_effs[hName]->Fill(iPassingSeg >= 0,probeVec.Pt());
+		  Float_t xBorderMu = getXY<Float_t>(Mu_matches_edgeX,iMu,iMatch);
+		  Float_t yBorderMu = getXY<Float_t>(Mu_matches_edgeY,iMu,iMatch);
 		  
-		  hName = "effSecVsWh" + iChTag.str();
-		  m_effs[hName]->Fill(iPassingSeg >= 0,secMu,whMu);
-
-		  hName = "effVsLumi" + iChTag.str();
-		  m_effs[hName]->Fill(iPassingSeg >= 0,lumiperblock);
-
-		  hName = "effVsNHitsPhi" + iChTag.str();
-		  Int_t nPhiHits = iPassingSeg >= 0 ? dtsegm4D_phinhits->at(iPassingSeg) : 0;
-
-		  for (Int_t phiHits = 1; phiHits < 9; ++phiHits)
-		    m_effs[hName]->Fill(nPhiHits >= phiHits, phiHits);
+		  if (stMu == iCh &&
+		      xBorderMu < m_tnpConfig.probe_maxBorderDx &&
+		      yBorderMu < m_tnpConfig.probe_maxBorderDy )
+		    { 
+		      
+		      iPassingSeg =  getPassingProbeInCh(iMu,stMu,secMu,whMu,xMu,yMu);
+		      
+		      hName = "effVsPt" + iChTag.str();
+		      m_effs[hName]->Fill(iPassingSeg >= 0,probeVec.Pt());
+		      
+		      hName = "effSecVsWh" + iChTag.str();
+		      m_effs[hName]->Fill(iPassingSeg >= 0,secMu,whMu);
+		      
+		      hName = "effVsLumi" + iChTag.str();
+		      m_effs[hName]->Fill(iPassingSeg >= 0,lumiperblock);
+		      
+		      hName = "effVsNHitsPhi" + iChTag.str();
+		      Int_t nPhiHits = iPassingSeg >= 0 ? dtsegm4D_phinhits->at(iPassingSeg) : 0;
+		      
+		      for (Int_t phiHits = 1; phiHits < 9; ++phiHits)
+			m_effs[hName]->Fill(nPhiHits >= phiHits, phiHits);
+		      
+		    }
 
 		}
 
