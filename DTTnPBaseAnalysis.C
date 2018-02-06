@@ -169,7 +169,8 @@ vector<std::pair<Int_t,Int_t>> DTTnPBaseAnalysis::tnpSelection()
 	Mu_isMuGlobal->at(iTag)     == 1 &&
 	Mu_isMuTrackerArb->at(iTag) == 1 &&
 	Mu_normchi2_glb->at(iTag)      < 10 &&
-	Mu_numberOfHits_sta->at(iTag)        > 0  && 
+	Mu_numberOfMatchedStations->at(iTag) >= 2 &&
+	Mu_numberOfHits_sta->at(iTag)        >  0 && 
 	Mu_numberOfPixelHits_trk->at(iTag)   >= 1 &&
 	Mu_numberOfTrackerLayers_trk->at(iTag) >= 6 &&
 	Mu_tkIsoR03_glb->at(iTag) / tagVec.Pt() < m_tnpConfig.tag_isoCut &&
@@ -217,6 +218,7 @@ vector<std::pair<Int_t,Int_t>> DTTnPBaseAnalysis::tnpSelection()
 		  m_plots["pairDz"]->Fill(tnpDz);
 		  
 		  if (std::abs(tnpDz) < m_tnpConfig.pair_maxAbsDz && 
+		      Mu_charge->at(iTag) * Mu_charge->at(iProbe) == -1 &&
 		      mass  > m_tnpConfig.pair_minInvMass && 
 		      mass  < m_tnpConfig.pair_maxInvMass &&
 		      tnpDr > m_tnpConfig.pair_minDr)
