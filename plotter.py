@@ -31,6 +31,8 @@ gROOT.ProcessLine("gErrorIgnoreLevel = 1001;") # suppress stdout pollution of ca
 TH1.AddDirectory(False)
 gStyle.SetOptTitle(0)
 gStyle.SetOptStat(0)
+gStyle.SetPaintTextFormat("1.3f");
+gStyle.SetHistMinimumZero()
 
 for keyPlot in config:
     if args.verbosity==1:
@@ -67,8 +69,7 @@ for keyPlot in config:
                 inputName = keys.GetName()
 
                 if inputName.find("=") > 0 or \
-                   inputDir.Get(inputName).ClassName() == "TDirectoryFile" or \
-                   inputDir.Get(inputName).ClassName() == "TH2F":
+                   inputDir.Get(inputName).ClassName() == "TDirectoryFile":
                     continue
 
                 if inputPlotNames[iHisto] == "all" :
@@ -114,48 +115,62 @@ for keyPlot in config:
         pad = TPad('pad', 'pad', 0.01, 0.00, 1.00, 1.00)
  
         pad.SetGrid()
-        #pad.SetLogy()
+        # pad.SetLogy()
         pad.Draw()
         pad.cd()
 
-        plotX = config[keyPlot]['plot']['x']
-        plotY = config[keyPlot]['plot']['y']
+        option = config[keyPlot]['plot']['option']
+        plotX  = config[keyPlot]['plot']['x']
+        plotY  = config[keyPlot]['plot']['y']
         # Generate superimposed graph using TMultiHisto
 
-        if histograms[iHisto].GetDimension() == 2 :
+        if config[keyPlot]['plot'].has_key("z") :
             plotZ = config[keyPlot]['plot']['z']
     
         for iHisto in range(len(histograms)):
 
+            histoDim   = histograms[iHisto].GetDimension()
+            histoClass = histograms[iHisto].ClassName()
+
             histograms[iHisto].SetTitle(";"+plotX[2]+";"+plotY[2])
 
             if iHisto == 0 :
-                if histograms[iHisto].GetDimension() == 2 :
-                    histograms[iHisto].Draw('colz')
+                if histoDim == 2 :
+                    histograms[iHisto].Draw(option)
                 else :
-                    histograms[iHisto].Draw('')
+                    histograms[iHisto].Draw(option)
             else :
-                histograms[iHisto].Draw('same')
+                histograms[iHisto].Draw('same' + option)
 
             canvas.Update()
 
-            if histograms[iHisto].ClassName() == "TEfficiency" and histograms[iHisto].GetDimension() == 1:
+            if histoClass == "TEfficiency" and histoDim == 1:
                 histo = histograms[iHisto].GetPaintedGraph()
-            elif histograms[iHisto].ClassName() == "TEfficiency" and histograms[iHisto].GetDimension() == 2:
+            elif histoClass == "TEfficiency" and histoDim == 2:
                 histo = histograms[iHisto].GetPaintedHistogram()
             else :
                 histo = histograms[iHisto]
                 
-            if histograms[iHisto].ClassName() == "TEfficiency" :
-                histo.GetXaxis().SetRangeUser(plotX[0], plotX[1])
+            histo.GetXaxis().SetRangeUser(plotX[0], plotX[1])
+
+            if histoClass == "TEfficiency" and histoDim == 1 :
                 histo.GetYaxis().SetRangeUser(plotY[0], plotY[1])
-                if histograms[iHisto].GetDimension() == 2 :
-                    histo.SetMinimum(plotZ[0])
-                    histo.SetMaximum(plotZ[1])
-                    histo.Draw("colz")
+            #    histograms[iHisto].SetTitle(";"+plotX[2]+";"+plotY[2])
+            elif histoClass == "TEfficiency" and histoDim == 2 : 
+                histo.GetYaxis().SetRangeUser(plotY[0], plotY[1])
+                histo.SetMinimum(plotZ[0])
+                histo.SetMaximum(plotZ[1])
+                histo.Draw(option)
+            elif histoClass == "TH2F" :
+                histo.GetYaxis().SetRangeUser(plotY[0], plotY[1])
+                histo.Draw(option)
             else:
+                histo.SetLineWidth(2)
                 histo.GetYaxis().SetRangeUser(0.0, histo.GetMaximum() * 1.5)
-                histo.GetXaxis().SetTitle(histoName)
+                histo.GetXaxis().SetTitle(plotX[2])
+                histo.GetYaxis().SetTitle(plotY[2])
+
+            canvas.Update()
 
             histo.GetXaxis().SetLabelSize(22)
             histo.GetXaxis().SetTitleFont(63)
@@ -193,12 +208,13 @@ for keyPlot in config:
         latex = TLatex()
         latex.SetNDC()
         latex.SetTextFont(61)
-        latex.SetTextSize(0.06)
-        latex.DrawLatex(0.16, 0.82, config[keyPlot]['plot']['logo'][0])
-        latex.SetTextFont(52)
-        latex.SetTextSize(0.04)
+        latex.SetTextSize(0.038)
         latex.SetTextAlign(11);
-        latex.DrawLatex(0.16, 0.77, config[keyPlot]['plot']['logo'][1])
+        latex.DrawLatex(0.115, 0.91, config[keyPlot]['plot']['logo'][0])
+        latex.SetTextFont(52)
+        latex.SetTextSize(0.035)
+        latex.SetTextAlign(11);
+        latex.DrawLatex(0.199, 0.91, config[keyPlot]['plot']['logo'][1])
         latex.SetTextFont(42)
         latex.SetTextSize(0.038)
         latex.SetTextAlign(31);

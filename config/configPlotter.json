@@ -18,6 +18,7 @@
         {
             "x"                 : [0.0, 200.0, "mu^{+} mu^{-} inv mass (GeV)"],
             "y"                 : [0.9, 1.1, "Entries"],
+            "option"            : "",
             "legendTitle"       : "",
             "caption"           : "Run2017F",
             "logo"              : ["CMS", "Work in progress"],
@@ -28,6 +29,72 @@
         {
             "directory"         : "plots/",
             "filenamePlot"      : "pair_mass",
+            "fileType"          : ["png", "pdf"]
+        }
+    },
+
+    "Muon relative iso"   :
+    {
+        "comment"   : "Muon relative iso",
+        "inputs"    :
+        {
+             "mass"   :
+            {
+                "label"             : "relative iso",
+                "legendEntry"       : "relative iso",
+                "filename"          : "results.root",
+                "folder"            : "",
+                "plot"		    : "probeReliso"
+		}
+        },
+        "plot"      :
+        {
+            "x"                 : [0.0, 1.0, "TRK iso. / mu p_{T}"],
+            "y"                 : [0.9, 1.1, "Entries"],
+            "option"            : "",
+	    "legendTitle"       : "",
+            "caption"           : "Run2017F",
+            "logo"              : ["CMS", "Work in progress"],
+            "colorMap"          : [1, 4, 2, 3, 5, 6, 7, 8, 9],
+            "markerMap"         : [20, 21, 22, 23, 24, 25, 26]
+        },
+        "output"    :
+        {
+            "directory"         : "plots/",
+            "filenamePlot"      : "trk_iso",
+            "fileType"          : ["png", "pdf"]
+        }
+    },
+
+    "Pair dR vs probe pt"   :
+    {
+        "comment"   : "Pair dR vs probe pt",
+        "inputs"    :
+        {
+             "mass"   :
+            {
+                "label"             : "Pair dR vs probe pt",
+                "legendEntry"       : "Pair dR vs probe pt",
+                "filename"          : "results.root",
+                "folder"            : "",
+                "plot"		    : "probePtVsPairDr"
+		}
+        },
+        "plot"      :
+        {
+            "x"                 : [0.0, 500.0, "probe mu p_{T} (GeV)"],
+            "y"                 : [0.0, 6.28, "dR(tag,probe)"],
+            "option"            : "colz",
+	    "legendTitle"       : "",
+            "caption"           : "Run2017F",
+            "logo"              : ["CMS", "Work in progress"],
+            "colorMap"          : [1, 4, 2, 3, 5, 6, 7, 8, 9],
+            "markerMap"         : [20, 21, 22, 23, 24, 25, 26]
+        },
+        "output"    :
+        {
+            "directory"         : "plots/",
+            "filenamePlot"      : "pair_dr_vs_probe_pt",
             "fileType"          : ["png", "pdf"]
         }
     },
@@ -74,6 +141,7 @@
         {
             "x"                 : [0.0, 200.0, "muon p_{T} (GeV/c)"],
             "y"                 : [0.9, 1.1, "Entries"],
+            "option"            : "",
             "legendTitle"       : "",
             "caption"           : "Run2017F",
             "logo"              : ["CMS", "Work in progress"],
@@ -130,6 +198,7 @@
         {
             "x"                 : [-1.2, 1.2, "muon #eta"],
             "y"                 : [0.9, 1.1, "Entries"],
+            "option"            : "",
             "legendTitle"       : "",
             "caption"           : "Run2017F",
             "logo"              : ["CMS", "Work in progress"],
@@ -186,6 +255,7 @@
         {
             "x"                 : [-1.2, 1.2, "muon #phi"],
             "y"                 : [0.9, 1.1, "Entries"],
+            "option"            : "",
             "legendTitle"       : "",
             "caption"           : "Run2017F",
             "logo"              : ["CMS", "Work in progress"],
@@ -242,6 +312,7 @@
         {
             "x"                 : [0.0, 200.0, "muon p_{T} (GeV/c)"],
             "y"                 : [0.9, 1.1, "Efficiency"],
+            "option"            : "",
             "legendTitle"       : "",
             "caption"           : "Run2017F",
             "logo"              : ["CMS", "Work in progress"],
@@ -274,7 +345,8 @@
         {
             "x"                 : [0.5, 12.5, "sector"],
             "y"                 : [-2.5, 2.5,  "wheel"],
-            "z"                 : [0.0, 1.0, "Efficiency"],
+            "z"                 : [0.95, 1.0, "Efficiency"],
+            "option"            : "colztext",
             "legendTitle"       : "",
             "caption"           : "Run2017F",
             "logo"              : ["CMS", "Work in progress"],
@@ -307,7 +379,8 @@
         {
             "x"                 : [0.5, 12.5, "sector"],
             "y"                 : [-2.5, 2.5,  "wheel"],
-            "z"                 : [0.0, 1.0, "Efficiency"],
+            "z"                 : [0.95, 1.0, "Efficiency"],
+            "option"            : "colztext",
             "legendTitle"       : "",
             "caption"           : "Run2017F",
             "logo"              : ["CMS", "Work in progress"],
@@ -340,7 +413,8 @@
         {
             "x"                 : [0.5, 12.5, "sector"],
             "y"                 : [-2.5, 2.5,  "wheel"],
-            "z"                 : [0.0, 1.0, "Efficiency"],
+            "z"                 : [0.95, 1.0, "Efficiency"],
+            "option"            : "colztext",
             "legendTitle"       : "",
             "caption"           : "Run2017F",
             "logo"              : ["CMS", "Work in progress"],
@@ -373,7 +447,8 @@
         {
             "x"                 : [0.5, 14.5, "sector"],
             "y"                 : [-2.5, 2.5,  "wheel"],
-            "z"                 : [0.0, 1.0, "Efficiency"],
+            "z"                 : [0.95, 1.0, "Efficiency"],
+            "option"            : "colztext",
             "legendTitle"       : "",
             "caption"           : "Run2017F",
             "logo"              : ["CMS", "Work in progress"],
@@ -384,6 +459,278 @@
         {
             "directory"         : "plots/",
             "filenamePlot"      : "eff_sec_vs_wh_MB4",
+            "fileType"          : ["png", "pdf"]
+        }
+    },
+
+    "Efficiency vs sec vs wheel MB1 no zoom"   :
+    {
+        "comment"   : "Efficiency sec vs wheel MB1",
+        "inputs"    :
+        {
+             "MB1"   :
+            {
+                "label"             : "",
+                "legendEntry"       : "",
+                "filename"          : "results.root",
+                "folder"            : "",
+                "plot"		    : "effSecVsWhMB1"
+	     }
+        },
+        "plot"      :
+        {
+            "x"                 : [0.5, 12.5, "sector"],
+            "y"                 : [-2.5, 2.5,  "wheel"],
+            "z"                 : [0.0, 1.0, "Efficiency"],
+            "option"            : "colztext",
+            "legendTitle"       : "",
+            "caption"           : "Run2017F",
+            "logo"              : ["CMS", "Work in progress"],
+            "colorMap"          : [1, 4, 2, 3, 5, 6, 7, 8, 9],
+            "markerMap"         : [20, 21, 22, 23, 24, 25, 26]
+        },
+        "output"    :
+        {
+            "directory"         : "plots/",
+            "filenamePlot"      : "eff_sec_vs_wh_no_zoom_MB1",
+            "fileType"          : ["png", "pdf"]
+        }
+    },
+
+    "Efficiency vs sec vs wheel MB2 no zoom"   :
+    {
+        "comment"   : "Efficiency sec vs wheel MB2",
+        "inputs"    :
+        {
+             "MB2"   :
+            {
+                "label"             : "",
+                "legendEntry"       : "",
+                "filename"          : "results.root",
+                "folder"            : "",
+                "plot"		    : "effSecVsWhMB2"
+	     }
+        },
+        "plot"      :
+        {
+            "x"                 : [0.5, 12.5, "sector"],
+            "y"                 : [-2.5, 2.5,  "wheel"],
+            "z"                 : [0.0, 1.0, "Efficiency"],
+            "option"            : "colztext",
+            "legendTitle"       : "",
+            "caption"           : "Run2017F",
+            "logo"              : ["CMS", "Work in progress"],
+            "colorMap"          : [1, 4, 2, 3, 5, 6, 7, 8, 9],
+            "markerMap"         : [20, 21, 22, 23, 24, 25, 26]
+        },
+        "output"    :
+        {
+            "directory"         : "plots/",
+            "filenamePlot"      : "eff_sec_vs_wh_no_zoom_MB2",
+            "fileType"          : ["png", "pdf"]
+        }
+    },
+
+    "Efficiency vs sec vs wheel MB3 no zoom"   :
+    {
+        "comment"   : "Efficiency sec vs wheel MB3",
+        "inputs"    :
+        {
+             "MB3"   :
+            {
+                "label"             : "",
+                "legendEntry"       : "",
+                "filename"          : "results.root",
+                "folder"            : "",
+                "plot"		    : "effSecVsWhMB3"
+	     }
+        },
+        "plot"      :
+        {
+            "x"                 : [0.5, 12.5, "sector"],
+            "y"                 : [-2.5, 2.5,  "wheel"],
+            "z"                 : [0.00, 1.0, "Efficiency"],
+            "option"            : "colztext",
+            "legendTitle"       : "",
+            "caption"           : "Run2017F",
+            "logo"              : ["CMS", "Work in progress"],
+            "colorMap"          : [1, 4, 2, 3, 5, 6, 7, 8, 9],
+            "markerMap"         : [20, 21, 22, 23, 24, 25, 26]
+        },
+        "output"    :
+        {
+            "directory"         : "plots/",
+            "filenamePlot"      : "eff_sec_vs_wh_no_zoom_MB3",
+            "fileType"          : ["png", "pdf"]
+        }
+    },
+
+    "Efficiency vs sec vs wheel MB4 no zoom"   :
+    {
+        "comment"   : "Efficiency sec vs wheel MB4",
+        "inputs"    :
+        {
+             "MB4"   :
+            {
+                "label"             : "",
+                "legendEntry"       : "",
+                "filename"          : "results.root",
+                "folder"            : "",
+                "plot"		    : "effSecVsWhMB4"
+	     }
+        },
+        "plot"      :
+        {
+            "x"                 : [0.5, 14.5, "sector"],
+            "y"                 : [-2.5, 2.5,  "wheel"],
+            "z"                 : [0.0, 1.0, "Efficiency"],
+            "option"            : "colztext",
+            "legendTitle"       : "",
+            "caption"           : "Run2017F",
+            "logo"              : ["CMS", "Work in progress"],
+            "colorMap"          : [1, 4, 2, 3, 5, 6, 7, 8, 9],
+            "markerMap"         : [20, 21, 22, 23, 24, 25, 26]
+        },
+        "output"    :
+        {
+            "directory"         : "plots/",
+            "filenamePlot"      : "eff_sec_vs_wh_no_zoom_MB4",
+            "fileType"          : ["png", "pdf"]
+        }
+    },
+
+    "Efficiency eta vs phi mu+ MB1"   :
+    {
+        "comment"   : "Efficiency eta vs phi mu+ MB1",
+        "inputs"    :
+        {
+             "MB1"   :
+            {
+                "label"             : "",
+                "legendEntry"       : "",
+                "filename"          : "results.root",
+                "folder"            : "",
+                "plot"		    : "effAccPhiVsEtaPlusMB1"
+	     }
+        },
+        "plot"      :
+        {
+            "x"                 : [-3.15, 3.15, "muon #phi"],
+            "y"                 : [-1.2, 1.2,  "muon #eta"],
+            "z"                 : [0.0, 1.0, "Efficiency"],
+            "option"            : "colz",
+            "legendTitle"       : "",
+            "caption"           : "Run2017F",
+            "logo"              : ["CMS", "Work in progress"],
+            "colorMap"          : [1, 4, 2, 3, 5, 6, 7, 8, 9],
+            "markerMap"         : [20, 21, 22, 23, 24, 25, 26]
+        },
+        "output"    :
+        {
+            "directory"         : "plots/",
+            "filenamePlot"      : "eff_eta_vs_phi_MB1",
+            "fileType"          : ["png", "pdf"]
+        }
+    },
+
+    "Efficiency eta vs phi mu+ MB2"   :
+    {
+        "comment"   : "Efficiency eta vs phi mu+ MB2",
+        "inputs"    :
+        {
+             "MB2"   :
+            {
+                "label"             : "",
+                "legendEntry"       : "",
+                "filename"          : "results.root",
+                "folder"            : "",
+                "plot"		    : "effAccPhiVsEtaPlusMB2"
+	     }
+        },
+        "plot"      :
+        {
+            "x"                 : [-3.15, 3.15, "muon #phi"],
+            "y"                 : [-1.2, 1.2,  "muon #eta"],
+            "z"                 : [0.0, 1.0, "Efficiency"],
+            "option"            : "colz",
+            "legendTitle"       : "",
+            "caption"           : "Run2017F",
+            "logo"              : ["CMS", "Work in progress"],
+            "colorMap"          : [1, 4, 2, 3, 5, 6, 7, 8, 9],
+            "markerMap"         : [20, 21, 22, 23, 24, 25, 26]
+        },
+        "output"    :
+        {
+            "directory"         : "plots/",
+            "filenamePlot"      : "eff_eta_vs_phi_MB2",
+            "fileType"          : ["png", "pdf"]
+        }
+    },
+
+    "Efficiency eta vs phi mu+ MB3"   :
+    {
+        "comment"   : "Efficiency eta vs phi mu+ MB3",
+        "inputs"    :
+        {
+             "MB3"   :
+            {
+                "label"             : "",
+                "legendEntry"       : "",
+                "filename"          : "results.root",
+                "folder"            : "",
+                "plot"		    : "effAccPhiVsEtaPlusMB3"
+	     }
+        },
+        "plot"      :
+        {
+            "x"                 : [-3.15, 3.15, "muon #phi"],
+            "y"                 : [-1.2, 1.2,  "muon #eta"],
+            "z"                 : [0.0, 1.0, "Efficiency"],
+            "option"            : "colz",
+            "legendTitle"       : "",
+            "caption"           : "Run2017F",
+            "logo"              : ["CMS", "Work in progress"],
+            "colorMap"          : [1, 4, 2, 3, 5, 6, 7, 8, 9],
+            "markerMap"         : [20, 21, 22, 23, 24, 25, 26]
+        },
+        "output"    :
+        {
+            "directory"         : "plots/",
+            "filenamePlot"      : "eff_eta_vs_phi_MB3",
+            "fileType"          : ["png", "pdf"]
+        }
+    },
+
+    "Efficiency eta vs phi mu+ MB4"   :
+    {
+        "comment"   : "Efficiency eta vs phi mu+ MB4",
+        "inputs"    :
+        {
+             "MB4"   :
+            {
+                "label"             : "",
+                "legendEntry"       : "",
+                "filename"          : "results.root",
+                "folder"            : "",
+                "plot"		    : "effAccPhiVsEtaPlusMB4"
+	     }
+        },
+        "plot"      :
+        {
+            "x"                 : [-3.15, 3.15, "muon #phi"],
+            "y"                 : [-1.2, 1.2,  "muon #eta"],
+            "z"                 : [0.0, 1.0, "Efficiency"],
+            "option"            : "colz",
+            "legendTitle"       : "",
+            "caption"           : "Run2017F",
+            "logo"              : ["CMS", "Work in progress"],
+            "colorMap"          : [1, 4, 2, 3, 5, 6, 7, 8, 9],
+            "markerMap"         : [20, 21, 22, 23, 24, 25, 26]
+        },
+        "output"    :
+        {
+            "directory"         : "plots/",
+            "filenamePlot"      : "eff_eta_vs_phi_MB4",
             "fileType"          : ["png", "pdf"]
         }
     },
@@ -430,6 +777,7 @@
         {
             "x"                 : [0.0, 200.0, "muon p_{T} (GeV/c)"],
             "y"                 : [0.0, 1.5, "Efficiency x acceptance"],
+            "option"            : "",
             "legendTitle"       : "",
             "caption"           : "Run2017F",
             "logo"              : ["CMS", "Work in progress"],
@@ -486,6 +834,7 @@
         {
             "x"                 : [-1.2, 1.2, "muon #eta"],
             "y"                 : [0.0, 1.5, "Efficiency x acceptance"],
+            "option"            : "",
             "legendTitle"       : "",
             "caption"           : "Run2017F",
             "logo"              : ["CMS", "Work in progress"],
@@ -526,6 +875,7 @@
         {
             "x"                 : [-3.15, 3.15, "muon #phi"],
             "y"                 : [0.0, 1.5, "Efficiency x acceptance"],
+            "option"            : "",
             "legendTitle"       : "MB1",
             "caption"           : "Run2017F",
             "logo"              : ["CMS", "Work in progress"],
@@ -566,6 +916,7 @@
         {
             "x"                 : [-3.15, 3.15, "muon #phi"],
             "y"                 : [0.0, 1.5, "Efficiency x acceptance"],
+            "option"            : "",
             "legendTitle"       : "MB2",
             "caption"           : "Run2017F",
             "logo"              : ["CMS", "Work in progress"],
@@ -606,6 +957,7 @@
         {
             "x"                 : [-3.15, 3.15, "muon #phi"],
             "y"                 : [0.0, 1.5, "Efficiency x acceptance"],
+            "option"            : "",
             "legendTitle"       : "MB3",
             "caption"           : "Run2017F",
             "logo"              : ["CMS", "Work in progress"],
@@ -646,6 +998,7 @@
         {
             "x"                 : [-3.15, 3.15, "muon #phi"],
             "y"                 : [0.0, 1.5, "Efficiency x acceptance"],
+            "option"            : "",
             "legendTitle"       : "MB4",
             "caption"           : "Run2017F",
             "logo"              : ["CMS", "Work in progress"],
@@ -702,6 +1055,7 @@
         {
             "x"                 : [0.0, 16000.0, "muon inst. lumi"],
             "y"                 : [0.9, 1.1, "Efficiency"],
+            "option"            : "",
             "legendTitle"       : "",
             "caption"           : "Run2017F",
             "logo"              : ["CMS", "Work in progress"],
@@ -758,6 +1112,7 @@
         {
             "x"                 : [0.5, 8.5, "# segment hits in phi view"],
             "y"                 : [0.0, 1.5, "Efficiency"],
+            "option"            : "",
             "legendTitle"       : "",
             "caption"           : "Run2017F",
             "logo"              : ["CMS", "Work in progress"],
