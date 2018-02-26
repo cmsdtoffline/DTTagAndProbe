@@ -151,6 +151,16 @@ void DTTnPSegmentEff::book()
 				      "segment efficiency vs inst. lumi.;inst. lumi.;Efficiency",
 				      50,0.,20000.);
 
+      hName = "effVsRun" + iChTag.str();
+      m_effs[hName] = new TEfficiency(hName.c_str(),
+				      "segment efficiency vs run number;run number;Efficiency",
+				      240, 294500., 306500.);
+
+      hName = "effVsVtx" + iChTag.str();
+      m_effs[hName] = new TEfficiency(hName.c_str(),
+				      "segment efficiency vs # of reco. vtx.;# of reco. vtx.;Efficiency",
+				      100,0.,100.);
+      
       hName = "effVsNHitsPhi" + iChTag.str();
       m_effs[hName] = new TEfficiency(hName.c_str(),
 				      "segment efficiency vs # phi hits.; # phi hits;Efficiency",
@@ -284,6 +294,12 @@ void DTTnPSegmentEff::fill(const Int_t iMu)
 		      
 		      hName = "effVsLumi" + iChTag.str();
 		      m_effs[hName]->Fill(iPassingSeg >= 0,lumiperblock);
+
+		      hName = "effVsVtx" + iChTag.str();
+		      m_effs[hName]->Fill(iPassingSeg >= 0,PV_Nvtx);
+
+		      hName = "effVsRun" + iChTag.str();
+		      m_effs[hName]->Fill(iPassingSeg >= 0,runnumber);
 		      
 		      hName = "effVsNHitsPhi" + iChTag.str();
 		      Int_t nPhiHits = iPassingSeg >= 0 ? dtsegm4D_phinhits->at(iPassingSeg) : 0;
