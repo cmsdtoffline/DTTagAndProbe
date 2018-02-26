@@ -95,7 +95,22 @@ void DTTnPSegmentEff::book()
       hName = "probePhi" + iChTag.str();
       m_plots[hName] = new TH1F(hName.c_str(),
 				"probe #phi;#phi;#entries/(pi*90)",
-				180,-TMath::Pi(),TMath::Pi()); 
+				180,-TMath::Pi(),TMath::Pi());
+
+      hName = "probeDrVsPt" + iChTag.str();
+      m_plots[hName]  = new TH2F(hName.c_str(),
+				 "dR vs p_{T};p_{T} [GeV];dR",
+				 200,0.,200.,50,0.,0.5); 
+
+      hName = "probeDxVsPt" + iChTag.str();
+      m_plots[hName]  = new TH2F(hName.c_str(),
+				 "dX vs p_{T};p_{T} [GeV];dX",
+				 200,0.,200.,50,0.,50); 
+
+      hName = "probeDyVsPt" + iChTag.str();
+      m_plots[hName]  = new TH2F(hName.c_str(),
+				 "dY vs p_{T};p_{T} [GeV];dY",
+				 200,0.,200.,50,0.,50); 
 
       hName = "effAccVsEta" + iChTag.str();
       m_effs[hName] = new TEfficiency(hName.c_str(),
@@ -174,7 +189,9 @@ void DTTnPSegmentEff::fill(const Int_t iMu)
       if ( nMatchInOtherCh >= m_tnpConfig.probe_minNMatchedSeg ||
 	   Mu_numberOfRPCLayers_rpc->at(iMu) >= m_tnpConfig.probe_minNRPCLayers )
 	{
-	  Int_t iPassingSeg = getPassingProbe(iMu,iCh);
+	  std::pair<Int_t,Int_t> iPassingProbe = getPassingProbe(iMu,iCh);
+	  Int_t iPassingSeg   = iPassingProbe.first;
+	  Int_t iPassingMatch = iPassingProbe.second;
 	  
 	  std::string hName = "effAccVsEta" + iChTag.str();
 	  m_effs[hName]->Fill(iPassingSeg >= 0,Mu_eta->at(iMu));
@@ -202,6 +219,29 @@ void DTTnPSegmentEff::fill(const Int_t iMu)
 	      
 	      hName = "probePhi" + iChTag.str(); 
 	      m_plots[hName]->Fill(probeVec.Phi());
+
+	      if (iPassingSeg > -1)
+		{
+
+		  Float_t xMu = getXY<Float_t>(Mu_matches_x,iMu,iPassingMatch); 
+		  Float_t yMu = getXY<Float_t>(Mu_matches_y,iMu,iPassingMatch);
+		  
+		  Float_t xSeg = dtsegm4D_x_pos_loc->at(iPassingSeg);
+		  Float_t ySeg = dtsegm4D_y_pos_loc->at(iPassingSeg);
+	  
+		  Float_t dX = std::abs(xSeg-xMu);
+		  Float_t dY = std::abs(ySeg-yMu);
+		  Float_t dR = sqrt(dX*dX + dY*dY);
+	  		  
+		  hName = "probeDrVsPt" + iChTag.str();
+		  m_plots[hName.c_str()]->Fill(probeVec.Pt(),dR);
+		  
+		  hName = "probeDxVsPt" + iChTag.str();
+		  m_plots[hName.c_str()]->Fill(probeVec.Pt(),dX);
+		  
+		  hName = "probeDyVsPt" + iChTag.str();
+		  m_plots[hName.c_str()]->Fill(probeVec.Pt(),dY);
+		}
 	      
 	      if (Mu_charge->at(iMu) == 1)
 		{
@@ -292,10 +332,11 @@ void DTTnPSegmentEff::endJob()
   
 }
 
-Int_t DTTnPSegmentEff::getPassingProbe(const Int_t iMu,
-				       const Int_t iCh) 
+std::pair<Int_t,Int_t> DTTnPSegmentEff::getPassingProbe(const Int_t iMu,
+							const Int_t iCh) 
 {
 
+  Int_t iBestMatch = -1;
   Int_t iBestSeg   = -1;
   Float_t bestSegDr = 999.;	  
 	  
@@ -325,15 +366,16 @@ Int_t DTTnPSegmentEff::getPassingProbe(const Int_t iMu,
 	  
           if(dR < bestSegDr)
             {
-              iBestSeg = iSeg;
-              bestSegDr = dR;
+              iBestMatch = iMatch;
+              iBestSeg   = iSeg;
+              bestSegDr  = dR;
             }
 	  
 	}
       
     }
 
-  return iBestSeg;
+  return std::pair<Int_t,Int_t>(iBestSeg,iBestMatch);
 
 }
 
@@ -348,6 +390,8 @@ Int_t DTTnPSegmentEff::getPassingProbeInCh(const Int_t iMu,
   
   Int_t iBestSeg   = -1;
   Float_t bestSegDr = 999.;
+  Float_t bestSegDx = 999.;
+  Float_t bestSegDy = 999.;
   
   for (Int_t iSeg = 0; iSeg < Ndtsegments; ++ iSeg)
     {
@@ -372,9 +416,11 @@ Int_t DTTnPSegmentEff::getPassingProbeInCh(const Int_t iMu,
 	{
 	  iBestSeg = iSeg;
 	  bestSegDr = dR;
+	  bestSegDx = dX;
+	  bestSegDy = dY;
 	}
     }
-
+        
   return iBestSeg;
 
 }

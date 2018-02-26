@@ -27,9 +27,9 @@ class DTTnPSegmentEff : public DTTnPBaseAnalysis
   virtual void fill(Int_t iMu) override;
   virtual void endJob() override;
 
-  Int_t getPassingProbe(const Int_t iMu,
-			const Int_t iCh);
-
+  std::pair<Int_t,Int_t>  getPassingProbe(const Int_t iMu,
+					  const Int_t iCh);
+  
   Int_t getPassingProbeInCh(const Int_t iMu,
                             const Int_t muSt,
                             const Int_t muSec,
