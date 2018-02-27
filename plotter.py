@@ -1,8 +1,37 @@
 import argparse
 import sys
 import os
+from array import *
 import json
 
+"""
+Function to define color plaette for 2D efficiency plots
+"""
+
+def efficiencyPalette() :
+    
+    from ROOT import TColor
+    
+    pcol = []
+    
+    for iBin in range(0,100) :
+
+        rgb  = []
+
+        if iBin < 89 :
+            rgb = [0.80+0.002*iBin, 0.00+0.0055*iBin, 0.00]
+    
+        elif iBin < 94 :
+            rgb = [0.80+0.002*iBin, 0.00+0.0055*iBin+0.10+0.05*(iBin-89), 0.00]
+      
+        else :
+            rgb = [0.98-0.196*(iBin-95), 0.80, 0.00]
+
+        pcol.append(TColor.GetColor(rgb[0], rgb[1], rgb[2]))
+        
+    return pcol
+
+                    
 """
 Setup argument parser
 """
@@ -157,11 +186,21 @@ for keyPlot in config:
                 histo.GetYaxis().SetRangeUser(plotY[0], plotY[1])
             #    histograms[iHisto].SetTitle(";"+plotX[2]+";"+plotY[2])
             elif histoClass == "TEfficiency" and histoDim == 2 : 
+                palette = efficiencyPalette()
+                gStyle.SetPalette(len(palette),array('i',palette))
+                #red    = array("d",[0.80,0.80,0.00])
+                #green  = array("d",[0.00,0.80,0.80])
+                #blue   = array("d",[0.00,0.00,0.00])
+                #points = array("d",[0.00,0.95,1.00])
+                nBins = 100
+                #TColor.CreateGradientColorTable(3,points,red,green,blue,nBins)
                 histo.GetYaxis().SetRangeUser(plotY[0], plotY[1])
                 histo.SetMinimum(plotZ[0])
                 histo.SetMaximum(plotZ[1])
+                histo.SetContour(nBins)
                 histo.Draw(option)
             elif histoClass == "TH2F" :
+                gStyle.SetPalette(1)
                 histo.GetYaxis().SetRangeUser(plotY[0], plotY[1])
                 histo.Draw(option)
             else:
@@ -169,7 +208,7 @@ for keyPlot in config:
                 histo.GetYaxis().SetRangeUser(0.0, histo.GetMaximum() * 1.5)
                 histo.GetXaxis().SetTitle(plotX[2])
                 histo.GetYaxis().SetTitle(plotY[2])
-
+                
             canvas.Update()
 
             histo.GetXaxis().SetLabelSize(22)

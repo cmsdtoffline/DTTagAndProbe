@@ -1070,6 +1070,120 @@
         }
     },
 
+        "Efficiency vs run number"   :
+    {
+        "comment"   : "Efficiency vs run number",
+        "inputs"    :
+        {
+             "MB1"   :
+            {
+                "label"             : "MB1",
+                "legendEntry"       : "MB1",
+                "filename"          : "results.root",
+                "folder"            : "",
+                "plot"		    : "effVsRunMB1"
+		},
+             "MB2"   :
+            {
+                "label"             : "MB2",
+                "legendEntry"       : "MB2",
+                "filename"          : "results.root",
+                "folder"            : "",
+                "plot"		    : "effVsRunMB2"
+            },
+             "MB3"   :
+            {
+                "label"             : "MB3",
+                "legendEntry"       : "MB3",
+                "filename"          : "results.root",
+                "folder"            : "",
+                "plot"		    : "effVsRunMB3"
+            },
+             "MB4"   :
+            {
+                "label"             : "MB4",
+                "legendEntry"       : "MB4",
+                "filename"          : "results.root",
+                "folder"            : "",
+                "plot"		    : "effVsRunMB4"
+            }
+        },
+        "plot"      :
+        {
+            "x"                 : [294500, 306500, "run number"],
+            "y"                 : [0.9, 1.1, "Efficiency"],
+            "option"            : "",
+            "legendTitle"       : "",
+            "caption"           : "Run2017F",
+            "logo"              : ["CMS", "Work in progress"],
+            "colorMap"          : [1, 4, 2, 3, 5, 6, 7, 8, 9],
+            "markerMap"         : [20, 21, 22, 23, 24, 25, 26]
+        },
+        "output"    :
+        {
+            "directory"         : "plots/",
+            "filenamePlot"      : "eff_vs_run",
+            "fileType"          : ["png", "pdf"]
+        }
+    },
+
+        "Efficiency vs number of reco vtx"   :
+    {
+        "comment"   : "Efficiency vs number of reco vtx",
+        "inputs"    :
+        {
+             "MB1"   :
+            {
+                "label"             : "MB1",
+                "legendEntry"       : "MB1",
+                "filename"          : "results.root",
+                "folder"            : "",
+                "plot"		    : "effVsVtxMB1"
+		},
+             "MB2"   :
+            {
+                "label"             : "MB2",
+                "legendEntry"       : "MB2",
+                "filename"          : "results.root",
+                "folder"            : "",
+                "plot"		    : "effVsVtxMB2"
+            },
+             "MB3"   :
+            {
+                "label"             : "MB3",
+                "legendEntry"       : "MB3",
+                "filename"          : "results.root",
+                "folder"            : "",
+                "plot"		    : "effVsVtxMB3"
+            },
+             "MB4"   :
+            {
+                "label"             : "MB4",
+                "legendEntry"       : "MB4",
+                "filename"          : "results.root",
+                "folder"            : "",
+                "plot"		    : "effVsVtxMB4"
+            }
+        },
+        "plot"      :
+        {
+            "x"                 : [0.0, 100.0, "# of reco vertexes"],
+            "y"                 : [0.9, 1.1, "Efficiency"],
+            "option"            : "",
+            "legendTitle"       : "",
+            "caption"           : "Run2017F",
+            "logo"              : ["CMS", "Work in progress"],
+            "colorMap"          : [1, 4, 2, 3, 5, 6, 7, 8, 9],
+            "markerMap"         : [20, 21, 22, 23, 24, 25, 26]
+        },
+        "output"    :
+        {
+            "directory"         : "plots/",
+            "filenamePlot"      : "eff_vs_vtx",
+            "fileType"          : ["png", "pdf"]
+        }
+    },
+
     "Efficiency vs # phi hits"   :
     {
         "comment"   : "Efficiency vs # phi hits",
