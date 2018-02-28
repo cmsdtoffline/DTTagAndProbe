@@ -463,6 +463,40 @@
         }
     },
 
+    "Efficiency vs sec vs wheel all no zoom"   :
+    {
+        "comment"   : "Efficiency sec vs wheel all",
+        "inputs"    :
+        {
+             "MB4"   :
+            {
+                "label"             : "",
+                "legendEntry"       : "",
+                "filename"          : "results.root",
+                "folder"            : "",
+                "plot"		    : "effSecVsWhAll"
+	     }
+        },
+        "plot"      :
+        {
+            "x"                 : [0.5, 12.5, "sector"],
+            "y"                 : [-2.5, 2.5,  "wheel"],
+            "z"                 : [0.0, 1.0, "Efficiency"],
+            "option"            : "colztext",
+            "legendTitle"       : "",
+            "caption"           : "Run2017F",
+            "logo"              : ["CMS", "Work in progress"],
+            "colorMap"          : [1, 4, 2, 3, 5, 6, 7, 8, 9],
+            "markerMap"         : [20, 21, 22, 23, 24, 25, 26]
+        },
+        "output"    :
+        {
+            "directory"         : "plots/",
+            "filenamePlot"      : "eff_sec_vs_wh_no_zoom_all",
+            "fileType"          : ["png", "pdf"]
+        }
+    },
+
     "Efficiency vs sec vs wheel MB1 no zoom"   :
     {
         "comment"   : "Efficiency sec vs wheel MB1",

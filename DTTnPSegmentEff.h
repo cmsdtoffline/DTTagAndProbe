@@ -23,9 +23,10 @@ class DTTnPSegmentEff : public DTTnPBaseAnalysis
   
  protected:
 
-  virtual void book() override;   
-  virtual void fill(Int_t iMu) override;
-  virtual void endJob() override;
+  void book() override;   
+  void fill(Int_t iMu) override;
+  void harvesting();
+  void endJob() override;
 
   std::pair<Int_t,Int_t>  getPassingProbe(const Int_t iMu,
 					  const Int_t iCh);

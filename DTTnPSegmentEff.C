@@ -60,6 +60,8 @@ void DTTnPSegmentEff::Loop()
 
     }
 
+  harvesting();
+
   std::cout << std::endl;
   
   endJob();
@@ -77,7 +79,14 @@ void DTTnPSegmentEff::book()
   m_plots["nOtherMatchedChVsEta"] = new TH2F("nOtherMatchedChVsEta",
 					     "# of matched stations other than the one under investigation",
 					     96,-1.2,1.2,5,-0.5,4.5);
+  
+  m_effs["effSecVsWhAll"] = new TEfficiency("effSecVsWhAll",
+					    "segment efficiency sector vs wheel;sector;wheel",
+					    24,0.5,12.5,10,-2.5,2.5);
 
+  m_plots["effChambAll"] = new TH1F("effChambAll",
+				    "segment efficiency chamber summary;efficiency;# chambers",
+				    500,0.,1.);
 
   for (Int_t iCh = 1; iCh < 5; ++iCh)
     {
@@ -170,12 +179,42 @@ void DTTnPSegmentEff::book()
       m_effs[hName] = new TEfficiency(hName.c_str(),
 				      "segment efficiency sector vs wheel;sector;wheel",
 				      14,0.5,14.5,5,-2.5,2.5);
+
       hName = "effChamb" + iChTag.str();
       m_plots[hName.c_str()] = new TH1F(hName.c_str(),
 					"segment efficiency chamber summary;efficiency;# chambers",
-					400,0.,1.);
+					500,0.,1.);
     }
  
+}
+
+void DTTnPSegmentEff::harvesting()
+{
+
+  std::vector<std::string> effNames  = { "effSecVsWhAll", "effSecVsWhMB1", "effSecVsWhMB2", "effSecVsWhMB3", "effSecVsWhMB4" };
+  std::vector<std::string> plotNames = { "effChambAll",   "effChambMB1",   "effChambMB2",   "effChambMB3",   "effChambMB4" };
+
+  std::vector<std::string>::const_iterator effNamesIt  = effNames.begin();
+  std::vector<std::string>::const_iterator plotNamesIt = plotNames.begin();
+
+  std::vector<std::string>::const_iterator effNamesEnd  = effNames.end();
+  std::vector<std::string>::const_iterator plotNamesEnd = plotNames.end();
+
+  for (; effNamesIt != effNamesEnd && plotNamesIt != plotNamesEnd; ++effNamesIt, ++plotNamesIt)
+    {
+      Int_t nBinsX = m_effs[(*effNamesIt)]->GetTotalHistogram()->GetNbinsX();
+      Int_t nBinsY = m_effs[(*effNamesIt)]->GetTotalHistogram()->GetNbinsY();
+
+      for (Int_t binX = 1; binX < nBinsX; ++binX)
+	{
+	  for (Int_t binY = 1; binY < nBinsY; ++binY)
+	    {
+	      Int_t bin = m_effs[(*effNamesIt)]->GetGlobalBin(binX,binY);
+	      m_plots[(*plotNamesIt)]->Fill(m_effs[(*effNamesIt)]->GetEfficiency(bin));
+	    }
+	}
+    }
+  
 }
 
 void DTTnPSegmentEff::fill(const Int_t iMu)
@@ -291,6 +330,14 @@ void DTTnPSegmentEff::fill(const Int_t iMu)
 		      
 		      hName = "effSecVsWh" + iChTag.str();
 		      m_effs[hName]->Fill(iPassingSeg >= 0,secMu,whMu);
+
+		      Float_t secBin = secMu == 13 ? 4 : secMu==14 ? 10 : secMu;
+		      secBin += (stMu % 2 == 1) ? -0.1 : 0.1;
+
+		      Float_t whBin = whMu + ((stMu -1) / 2 == 0 ? -0.1 : 0.1);
+		      
+		      hName = "effSecVsWhAll";
+		      m_effs[hName]->Fill(iPassingSeg >= 0,secBin,whBin);
 		      
 		      hName = "effVsLumi" + iChTag.str();
 		      m_effs[hName]->Fill(iPassingSeg >= 0,lumiperblock);
