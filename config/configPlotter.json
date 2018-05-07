@@ -1298,7 +1298,7 @@
         },
         "plot"      :
         {
-            "x"                 : [294500, 306500, "run number"],
+            "x"                 : [315252, 315510, "run number"],
             "y"                 : [0.8, 1.05, "Efficiency"],
             "option"            : "",
             "legendTitle"       : "",

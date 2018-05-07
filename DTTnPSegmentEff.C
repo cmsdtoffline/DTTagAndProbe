@@ -166,7 +166,7 @@ void DTTnPSegmentEff::book()
       hName = "effVsRun" + iChTag.str();
       m_effs[hName] = new TEfficiency(hName.c_str(),
 				      "segment efficiency vs run number;run number;Efficiency",
-				      240, 294500., 306500.);
+				      258, 315252., 315510.);
 
       hName = "effVsVtx" + iChTag.str();
       m_effs[hName] = new TEfficiency(hName.c_str(),
