@@ -76,6 +76,9 @@ void DTTnPSegmentEff::book()
 
   DTTnPBaseAnalysis::book();
 
+  Double_t ptBins[22] = {0., 5., 10., 15., 20., 25., 30., 35., 40., 50., 60.,
+			 70., 90., 110., 130., 150., 200., 250., 300., 400., 500., 750};
+  
   m_plots["nOtherMatchedChVsEta"] = new TH2F("nOtherMatchedChVsEta",
 					     "# of matched stations other than the one under investigation",
 					     96,-1.2,1.2,5,-0.5,4.5);
@@ -86,7 +89,7 @@ void DTTnPSegmentEff::book()
 
   m_plots["effChambAll"] = new TH1F("effChambAll",
 				    "segment efficiency chamber summary;efficiency;# chambers",
-				    500,0.,1.);
+				    50,0.9,1.);
 
   for (Int_t iCh = 1; iCh < 5; ++iCh)
     {
@@ -138,22 +141,22 @@ void DTTnPSegmentEff::book()
       hName = "effAccPhiVsEtaPlus" + iChTag.str();
       m_effs[hName] = new TEfficiency(hName.c_str(),
 				      "segment efficiency x acceptance #phi vs #eta for mu^{+};muon #phi;muon #eta",
-				      96,-TMath::Pi(),TMath::Pi(),96,-1.2,1.2);
-
+				      96,-TMath::Pi(),TMath::Pi(),96,-1.4,1.4);
+      
       hName = "effAccPhiVsEtaMinus" + iChTag.str();
       m_effs[hName] = new TEfficiency(hName.c_str(),
 				      "segment efficiency x acceptance #phi vs #eta for mu^{+};muon #phi;muon #eta",
-				      96,-TMath::Pi(),TMath::Pi(),96,-1.2,1.2);
+				      96,-TMath::Pi(),TMath::Pi(),96,-1.4,1.4);
 
       hName = "effAccVsPt" + iChTag.str();
       m_effs[hName] = new TEfficiency(hName.c_str(),
 				      "segment efficiency x acceptance vs p_{T};muon p_{T};Efficiency",
-				      50,0.,200.);
+				      21, ptBins);
 
       hName = "effVsPt" + iChTag.str();
       m_effs[hName] = new TEfficiency(hName.c_str(),
 				      "segment efficiency vs p_{T};muon p_{T};Efficiency",
-				      50,0.,200.);
+				      21, ptBins);
 
       hName = "effVsLumi" + iChTag.str();
       m_effs[hName] = new TEfficiency(hName.c_str(),
@@ -178,12 +181,12 @@ void DTTnPSegmentEff::book()
       hName = "effSecVsWh" + iChTag.str();
       m_effs[hName] = new TEfficiency(hName.c_str(),
 				      "segment efficiency sector vs wheel;sector;wheel",
-				      14,0.5,14.5,5,-2.5,2.5);
+				      14,1.,15.,5,-2.,3.);
 
       hName = "effChamb" + iChTag.str();
       m_plots[hName.c_str()] = new TH1F(hName.c_str(),
 					"segment efficiency chamber summary;efficiency;# chambers",
-					500,0.,1.);
+					50,0.9,1.);
     }
  
 }
@@ -191,8 +194,8 @@ void DTTnPSegmentEff::book()
 void DTTnPSegmentEff::harvesting()
 {
 
-  std::vector<std::string> effNames  = { "effSecVsWhAll", "effSecVsWhMB1", "effSecVsWhMB2", "effSecVsWhMB3", "effSecVsWhMB4" };
-  std::vector<std::string> plotNames = { "effChambAll",   "effChambMB1",   "effChambMB2",   "effChambMB3",   "effChambMB4" };
+  std::vector<std::string> effNames  = { "effSecVsWhMB1", "effSecVsWhMB2", "effSecVsWhMB3", "effSecVsWhMB4" };
+  std::vector<std::string> plotNames = { "effChambMB1",   "effChambMB2",   "effChambMB3",   "effChambMB4" };
 
   std::vector<std::string>::const_iterator effNamesIt  = effNames.begin();
   std::vector<std::string>::const_iterator plotNamesIt = plotNames.begin();
@@ -205,16 +208,22 @@ void DTTnPSegmentEff::harvesting()
       Int_t nBinsX = m_effs[(*effNamesIt)]->GetTotalHistogram()->GetNbinsX();
       Int_t nBinsY = m_effs[(*effNamesIt)]->GetTotalHistogram()->GetNbinsY();
 
-      for (Int_t binX = 1; binX < nBinsX; ++binX)
+      for (Int_t binX = 1; binX <= nBinsX; ++binX)
 	{
-	  for (Int_t binY = 1; binY < nBinsY; ++binY)
-	    {
+	  
+	  if (binX > 12 && effNamesIt->find("MB4") == std::string::npos)
+	    break;
+	  
+	  for (Int_t binY = 1; binY <= nBinsY; ++binY)
+	    {	      
 	      Int_t bin = m_effs[(*effNamesIt)]->GetGlobalBin(binX,binY);
 	      m_plots[(*plotNamesIt)]->Fill(m_effs[(*effNamesIt)]->GetEfficiency(bin));
+	      m_plots["effChambAll"]->Fill(m_effs[(*effNamesIt)]->GetEfficiency(bin));
 	    }
 	}
+
     }
-  
+
 }
 
 void DTTnPSegmentEff::fill(const Int_t iMu)
@@ -329,7 +338,7 @@ void DTTnPSegmentEff::fill(const Int_t iMu)
 		      m_effs[hName]->Fill(iPassingSeg >= 0,probeVec.Pt());
 		      
 		      hName = "effSecVsWh" + iChTag.str();
-		      m_effs[hName]->Fill(iPassingSeg >= 0,secMu,whMu);
+		      m_effs[hName]->Fill(iPassingSeg >= 0,secMu + 0.5,whMu + 0.5);
 
 		      Float_t secBin = secMu == 13 ? 4 : secMu==14 ? 10 : secMu;
 		      secBin += (stMu % 2 == 1) ? -0.1 : 0.1;
