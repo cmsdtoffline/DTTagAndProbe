@@ -18,14 +18,23 @@ def efficiencyPalette() :
 
         rgb  = []
 
-        if iBin < 89 :
-            rgb = [0.80+0.002*iBin, 0.00+0.0055*iBin, 0.00]
+        if iBin < 70 :
+            rgb = [0.70+0.007*iBin, 0.00+0.0069*iBin, 0.00]
     
-        elif iBin < 94 :
-            rgb = [0.80+0.002*iBin, 0.00+0.0055*iBin+0.10+0.05*(iBin-89), 0.00]
+        elif iBin < 90 :
+            rgb = [0.70+0.007*iBin, 0.00+0.0069*iBin+0.10+0.01*(iBin-70), 0.00]
       
         else :
-            rgb = [0.98-0.196*(iBin-95), 0.80, 0.00]
+            rgb = [0.98-0.098*(iBin-90), 0.80, 0.00]
+
+        #if iBin < 89 :
+        #    rgb = [0.80+0.002*iBin, 0.00+0.0055*iBin, 0.00]
+    
+        #elif iBin < 94 :
+        #    rgb = [0.80+0.002*iBin, 0.00+0.0055*iBin+0.10+0.05*(iBin-89), 0.00]
+      
+        #else :
+        #    rgb = [0.98-0.196*(iBin-95), 0.80, 0.00]
 
         pcol.append(TColor.GetColor(rgb[0], rgb[1], rgb[2]))
         
@@ -36,7 +45,8 @@ def efficiencyPalette() :
 Setup argument parser
 """
 
-parser = argparse.ArgumentParser(description="This program takes an input JSON config and extracts plots from Tag-and-Probe ROOT files. The output consists of a plot with superimposed graphs from multiple TnP files and the according fit canvases.")
+parser = argparse.ArgumentParser(description="This program takes an input JSON config and extracts plots from ROOT files. " \
+                                             + "The output consists of a plot with superimposed plots from multiple files." )
 parser.add_argument("inputJsonConfig", help="Path to the input JSON config file")
 parser.add_argument("-f", "--fast", default=0, action="count", help="Skip fetching and saving the fit canvases for each plot")
 parser.add_argument("-v", "--verbosity", default=1, help="Increase or decrease output verbosity")
@@ -59,7 +69,6 @@ gROOT.ProcessLine("gErrorIgnoreLevel = 1001;") # suppress stdout pollution of ca
 
 TH1.AddDirectory(False)
 gStyle.SetOptTitle(0)
-gStyle.SetOptStat(0)
 gStyle.SetPaintTextFormat("1.3f");
 gStyle.SetHistMinimumZero()
 
@@ -116,8 +125,9 @@ for keyPlot in config:
                 inputHistos[nameTag].append(histo)
 
     # Set line color and marker style for each graph using given maps from config
-    colorMap = config[keyPlot]['plot']['colorMap']
-    markerMap = config[keyPlot]['plot']['markerMap']
+    colorMap    = config[keyPlot]['plot']['colorMap']
+    markerMap   = config[keyPlot]['plot']['markerMap']
+    legendRange = config[keyPlot]['plot']['legendRange']
     if args.verbosity==1:
         print('Using colormap: {}'.format(colorMap))
         print('Using markermap: {}'.format(markerMap))
@@ -140,11 +150,10 @@ for keyPlot in config:
         # Setup canvas with all elements
         canvas = TCanvas('canvas', 'canvas', 800, 800)
 
-
         pad = TPad('pad', 'pad', 0.01, 0.00, 1.00, 1.00)
  
         pad.SetGrid()
-        # pad.SetLogy()
+        #pad.SetLogz()
         pad.Draw()
         pad.cd()
 
@@ -152,7 +161,14 @@ for keyPlot in config:
         plotX  = config[keyPlot]['plot']['x']
         plotY  = config[keyPlot]['plot']['y']
         # Generate superimposed graph using TMultiHisto
-
+ 
+        if plotY[2].find("# of chambers") > -1:
+            gStyle.SetOptStat("emu")
+            gStyle.SetStatX(0.9)
+            gStyle.SetStatY(0.9)
+        else:
+            gStyle.SetOptStat(0)
+        
         if config[keyPlot]['plot'].has_key("z") :
             plotZ = config[keyPlot]['plot']['z']
     
@@ -187,18 +203,29 @@ for keyPlot in config:
             #    histograms[iHisto].SetTitle(";"+plotX[2]+";"+plotY[2])
             elif histoClass == "TEfficiency" and histoDim == 2 : 
                 palette = efficiencyPalette()
-                gStyle.SetPalette(len(palette),array('i',palette))
-                #red    = array("d",[0.80,0.80,0.00])
-                #green  = array("d",[0.00,0.80,0.80])
-                #blue   = array("d",[0.00,0.00,0.00])
-                #points = array("d",[0.00,0.95,1.00])
-                nBins = 100
-                #TColor.CreateGradientColorTable(3,points,red,green,blue,nBins)
+                nBins = len(palette)
+                gStyle.SetPalette(nBins,array('i',palette))
                 histo.GetYaxis().SetRangeUser(plotY[0], plotY[1])
                 histo.SetMinimum(plotZ[0])
                 histo.SetMaximum(plotZ[1])
                 histo.SetContour(nBins)
                 histo.Draw(option)
+                if plotX[2] == "sector" and histo.GetXaxis().GetNbins() == 24 :
+                    histo.GetXaxis().SetNdivisions(histo.GetNbinsX() / 2,True)
+                    line = TLine();
+                    for x in range(1,12) :
+                        line.DrawLine(x+0.5, -2.5, x+0.5, 2.5);
+                if plotY[2] == "wheel" and histo.GetYaxis().GetNbins() == 10 :
+                    histo.GetYaxis().SetNdivisions(histo.GetNbinsY() / 2,True)
+                    line = TLine();
+                    for y in range(-2,2) :
+                        line.DrawLine(0.5, y+0.5, 12.5, y+0.5);
+                histoClone = histo.Clone()
+                histoClone.GetXaxis().SetNdivisions(histo.GetNbinsX(),True)
+                histoClone.GetYaxis().SetNdivisions(histo.GetNbinsY(),True)
+                histoClone.GetXaxis().SetTickLength(0.01)
+                histoClone.GetYaxis().SetTickLength(0.01)
+                histoClone.Draw("same axig")
             elif histoClass == "TH2F" :
                 gStyle.SetPalette(1)
                 histo.GetYaxis().SetRangeUser(plotY[0], plotY[1])
@@ -217,14 +244,20 @@ for keyPlot in config:
             histo.GetXaxis().SetTitleSize(22)
             histo.GetXaxis().SetLabelSize(20)
             histo.GetXaxis().SetTitleOffset(1.2)
-           
+            if plotX[2] == "sector" and histo.GetXaxis().GetNbins() <= 14 :
+                for iBinX in range(1,histo.GetXaxis().GetNbins() +1) :
+                    histo.GetXaxis().SetBinLabel(iBinX,str(iBinX))
+            
             histo.GetYaxis().SetLabelSize(22)
             histo.GetYaxis().SetTitleFont(63)
             histo.GetYaxis().SetLabelFont(43)
             histo.GetYaxis().SetTitleSize(22)
             histo.GetYaxis().SetLabelSize(20)
             histo.GetYaxis().SetTitleOffset(1.5)
-            
+            if plotY[2] == "wheel" and histo.GetYaxis().GetNbins() == 5 :
+                for iBinY in range(1,histo.GetYaxis().GetNbins() +1) :
+                    histo.GetYaxis().SetBinLabel(iBinY,str(iBinY - 3))
+                        
             canvas.Update()
 
         canvas.Update()
@@ -233,7 +266,7 @@ for keyPlot in config:
 
         if len(histograms) > 1 :
         
-            leg = TLegend(0.49, 0.67, 0.75+0.1, 0.80)
+            leg = TLegend(legendRange[0], legendRange[1], legendRange[2], legendRange[3])
 
             for iHisto in range(len(histograms)):
                 leg.AddEntry(histograms[iHisto], inputLegendEntries[iHisto], 'LP')
@@ -262,7 +295,7 @@ for keyPlot in config:
         latex.SetTextColor(1)
         latex.SetTextFont(43)
         latex.SetTextSize(20)
-        latex.DrawLatex(0.49, 0.82, config[keyPlot]['plot']['legendTitle'])
+        latex.DrawLatex(legendRange[0], legendRange[3] + 0.02, config[keyPlot]['plot']['legendTitle'])
         canvas.Update()
     
         # Save plot
