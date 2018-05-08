@@ -162,7 +162,7 @@ for keyPlot in config:
         plotY  = config[keyPlot]['plot']['y']
         # Generate superimposed graph using TMultiHisto
  
-        if plotY[2].find("# of chambers") > -1:
+        if plotY[2].find("No. chambers") > -1:
             gStyle.SetOptStat("emu")
             gStyle.SetStatX(0.9)
             gStyle.SetStatY(0.9)
@@ -179,6 +179,9 @@ for keyPlot in config:
 
             histograms[iHisto].SetTitle(";"+plotX[2]+";"+plotY[2])
 
+            if plotY[2].find("No. chambers") > -1:
+                histograms[iHisto].SetFillColor(kOrange-2)
+                
             if iHisto == 0 :
                 if histoDim == 2 :
                     histograms[iHisto].Draw(option)
@@ -210,12 +213,12 @@ for keyPlot in config:
                 histo.SetMaximum(plotZ[1])
                 histo.SetContour(nBins)
                 histo.Draw(option)
-                if plotX[2] == "sector" and histo.GetXaxis().GetNbins() == 24 :
+                if plotX[2] == "Sector" and histo.GetXaxis().GetNbins() == 24 :
                     histo.GetXaxis().SetNdivisions(histo.GetNbinsX() / 2,True)
                     line = TLine();
                     for x in range(1,12) :
                         line.DrawLine(x+0.5, -2.5, x+0.5, 2.5);
-                if plotY[2] == "wheel" and histo.GetYaxis().GetNbins() == 10 :
+                if plotY[2] == "Wheel" and histo.GetYaxis().GetNbins() == 10 :
                     histo.GetYaxis().SetNdivisions(histo.GetNbinsY() / 2,True)
                     line = TLine();
                     for y in range(-2,2) :
@@ -280,24 +283,24 @@ for keyPlot in config:
         latex = TLatex()
         latex.SetNDC()
         latex.SetTextFont(61)
-        latex.SetTextSize(0.038)
+        latex.SetTextSize(0.030)
         latex.SetTextAlign(11);
         latex.DrawLatex(0.115, 0.91, config[keyPlot]['plot']['logo'][0])
         latex.SetTextFont(52)
-        latex.SetTextSize(0.035)
+        latex.SetTextSize(0.027)
         latex.SetTextAlign(11);
-        latex.DrawLatex(0.199, 0.91, config[keyPlot]['plot']['logo'][1])
+        latex.DrawLatex(0.179, 0.91, config[keyPlot]['plot']['logo'][1])
         latex.SetTextFont(42)
-        latex.SetTextSize(0.038)
+        latex.SetTextSize(0.030)
         latex.SetTextAlign(31);
         latex.DrawLatex(0.90, 0.91, config[keyPlot]['plot']['caption'])
         latex.SetTextAlign(11);
         latex.SetTextColor(1)
-        latex.SetTextFont(43)
-        latex.SetTextSize(20)
+        latex.SetTextFont(61)
+        latex.SetTextSize(0.032)
         latex.DrawLatex(legendRange[0], legendRange[3] + 0.02, config[keyPlot]['plot']['legendTitle'])
         canvas.Update()
-    
+
         # Save plot
         outputDirectory = config[keyPlot]['output']['directory']
         if args.verbosity==1:
