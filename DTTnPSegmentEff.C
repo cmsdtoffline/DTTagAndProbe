@@ -83,10 +83,14 @@ void DTTnPSegmentEff::book()
 					     "# of matched stations other than the one under investigation",
 					     96,-1.2,1.2,5,-0.5,4.5);
   
-  m_effs["effSecVsWhAll"] = new TEfficiency("effSecVsWhAll",
+  m_effs["effSecVsWhAllOne"] = new TEfficiency("effSecVsWhAll",
 					    "segment efficiency sector vs wheel;sector;wheel",
 					    24,0.5,12.5,10,-2.5,2.5);
 
+  m_effs["effSecVsWhAllTwo"] = new TEfficiency("effSecVsWhAll",
+					       "segment efficiency sector vs wheel;wheel/station;sector;",
+					       20,1.0,21.0,12,1.0,13.0);
+  
   m_plots["effChambAll"] = new TH1F("effChambAll",
 				    "segment efficiency chamber summary;efficiency;# chambers",
 				    50,0.9,1.);
@@ -340,14 +344,22 @@ void DTTnPSegmentEff::fill(const Int_t iMu)
 		      hName = "effSecVsWh" + iChTag.str();
 		      m_effs[hName]->Fill(iPassingSeg >= 0,secMu + 0.5,whMu + 0.5);
 
-		      Float_t secBin = secMu == 13 ? 4 : secMu==14 ? 10 : secMu;
-		      secBin += (stMu % 2 == 1) ? -0.1 : 0.1;
+		      Float_t secBinOne = secMu == 13 ? 4 : secMu==14 ? 10 : secMu;
+		      secBinOne += (stMu % 2 == 1) ? -0.1 : 0.1;
 
-		      Float_t whBin = whMu + ((stMu -1) / 2 == 0 ? -0.1 : 0.1);
+		      Float_t whBinOne = whMu + ((stMu -1) / 2 == 0 ? -0.1 : 0.1);
 		      
-		      hName = "effSecVsWhAll";
-		      m_effs[hName]->Fill(iPassingSeg >= 0,secBin,whBin);
+		      hName = "effSecVsWhAllOne";
+		      m_effs[hName]->Fill(iPassingSeg >= 0,secBinOne,whBinOne);
+
+		      Float_t secBinTwo = secMu == 13 ? 4 : secMu==14 ? 10 : secMu;
+		      secBinTwo += 0.1;
+
+		      Float_t whBinTwo = whMu + 3.1 + ((stMu - 1) * 5);
 		      
+		      hName = "effSecVsWhAllTwo";
+		      m_effs[hName]->Fill(iPassingSeg >= 0,whBinTwo,secBinTwo);
+
 		      hName = "effVsLumi" + iChTag.str();
 		      m_effs[hName]->Fill(iPassingSeg >= 0,lumiperblock);
 
