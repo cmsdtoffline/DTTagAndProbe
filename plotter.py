@@ -158,6 +158,19 @@ for keyPlot in config:
         pad.cd()
 
         option = config[keyPlot]['plot']['option']
+ 
+        hasGridByWheel  = option.find("gridByWheel") > -1
+        if hasGridByWheel :
+            option = option.replace("gridByWheel","")
+            
+        hasGridBySector = option.find("gridBySector") > -1
+        if hasGridBySector :
+            option = option.replace("gridBySector","")
+            
+        hasGrid = option.find("grid") > -1
+        if hasGrid :
+            option = option.replace("grid","")
+            
         plotX  = config[keyPlot]['plot']['x']
         plotY  = config[keyPlot]['plot']['y']
         # Generate superimposed graph using TMultiHisto
@@ -213,16 +226,42 @@ for keyPlot in config:
                 histo.SetMaximum(plotZ[1])
                 histo.SetContour(nBins)
                 histo.Draw(option)
-                if plotX[2] == "Sector" and histo.GetXaxis().GetNbins() == 24 :
+
+                if hasGrid :
+                    histo.GetXaxis().SetNdivisions(histo.GetNbinsX() / 2,True)
+                    histo.GetYaxis().SetNdivisions(histo.GetNbinsY() / 2,True)
+
+                if hasGridBySector :
                     histo.GetXaxis().SetNdivisions(histo.GetNbinsX() / 2,True)
                     line = TLine();
                     for x in range(1,12) :
                         line.DrawLine(x+0.5, -2.5, x+0.5, 2.5);
-                if plotY[2] == "Wheel" and histo.GetYaxis().GetNbins() == 10 :
+
                     histo.GetYaxis().SetNdivisions(histo.GetNbinsY() / 2,True)
-                    line = TLine();
                     for y in range(-2,2) :
                         line.DrawLine(0.5, y+0.5, 12.5, y+0.5);
+                        
+                if hasGridByWheel :
+                    histo.GetXaxis().SetNdivisions(histo.GetNbinsX() / 4,True)
+                    line = TLine();
+                    for x in range(1,4) :
+                        line.DrawLine((x*5)+1.0, 1.0, (x*5)+1.0, 13.0);
+                    for x in range(0,20) :
+                        histo.GetXaxis().SetBinLabel(x+1,"YB"+str(x%5 - 2))
+                    histo.GetXaxis().LabelsOption("v")
+                    latex = TLatex()
+                    latex.SetNDC()
+                    latex.SetTextFont(62)
+                    latex.SetTextSize(0.028)
+                    latex.SetTextAlign(11);
+                    latex.DrawLatex(0.19, 0.01, "MB1")
+                    latex.DrawLatex(0.39, 0.01, "MB2")
+                    latex.DrawLatex(0.59, 0.01, "MB3")
+                    latex.DrawLatex(0.79, 0.01, "MB4")
+                    histo.GetYaxis().SetNdivisions(histo.GetNbinsY(),True)
+                    for x in range(1,13) :
+                        histo.GetYaxis().SetBinLabel(x,str(x))
+                        
                 histoClone = histo.Clone()
                 histoClone.GetXaxis().SetNdivisions(histo.GetNbinsX(),True)
                 histoClone.GetYaxis().SetNdivisions(histo.GetNbinsY(),True)
