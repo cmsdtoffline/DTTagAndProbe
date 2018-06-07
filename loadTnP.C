@@ -4,6 +4,8 @@
 void loadSegmentTnP()
 {
 
+  //gSystem->Load("/opt/local/lib/libboost_filesystem-mt.dylib");
+  
   gROOT->ProcessLine(".L DTAnalyzer.C++");
   gROOT->ProcessLine(".L DTTnPConfig.C++");
   gROOT->ProcessLine(".L DTTnPBaseAnalysis.C++");

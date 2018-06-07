@@ -388,7 +388,7 @@
             "x"                 : [1.0, 13.0, "Sector"],
             "y"                 : [-2.0, 3.0,  "Wheel"],
             "z"                 : [0.8, 1.0, "DT Segment Reconstruction Efficiency"],
-            "option"            : "colztext",
+            "option"            : "gridcolztext",
             "legendTitle"       : "DT Segment Reconstruction Efficiency  -  MB1",
             "caption"           : "13.5 fb^{-1} (2017 data, 13 TeV)",
             "logo"              : ["CMS", "Preliminary"],
@@ -423,7 +423,7 @@
             "x"                 : [1.0, 13.0, "Sector"],
             "y"                 : [-2.0, 3.0,  "Wheel"],
             "z"                 : [0.8, 1.0, "DT Segment Reconstruction Efficiency"],
-            "option"            : "colztext",
+            "option"            : "gridcolztext",
             "legendTitle"       : "DT Segment Reconstruction Efficiency  -  MB2",
             "caption"           : "13.5 fb^{-1} (2017 data, 13 TeV)",
             "logo"              : ["CMS", "Preliminary"],
@@ -458,7 +458,7 @@
             "x"                 : [1.0, 13.0, "Sector"],
             "y"                 : [-2.0, 3.0,  "Wheel"],
             "z"                 : [0.8, 1.0, "DT Segment Reconstruction Efficiency"],
-            "option"            : "colztext",
+            "option"            : "gridcolztext",
             "legendTitle"       : "DT Segment Reconstruction Efficiency  -  MB3",
             "caption"           : "13.5 fb^{-1} (2017 data, 13 TeV)",
             "logo"              : ["CMS", "Preliminary"],
@@ -493,7 +493,7 @@
             "x"                 : [1.0, 14.5, "Sector"],
             "y"                 : [-2.0, 3.0,  "Wheel"],
             "z"                 : [0.8, 1.0, "DT Segment Reconstruction Efficiency"],
-            "option"            : "colztext",
+            "option"            : "gridcolztext",
             "legendTitle"       : "DT Segment Reconstruction Efficiency  -  MB4",
             "caption"           : "13.5 fb^{-1} (2017 data, 13 TeV)",
             "logo"              : ["CMS", "Preliminary"],
@@ -509,26 +509,26 @@
         }
     },
 
-    "Efficiency vs sec vs wheel all no zoom"   :
+    "Efficiency vs sec vs wheel all one"   :
     {
         "comment"   : "Efficiency sec vs wheel all",
         "inputs"    :
         {
-             "MB4"   :
+            "all"   :
             {
                 "label"             : "",
                 "legendEntry"       : "",
                 "filename"          : "results.root",
                 "folder"            : "",
-                "plot"		    : "effSecVsWhAll"
-	     }
-        },
+                "plot"		    : "effSecVsWhAllOne"
+            }
+	},
         "plot"      :
         {
             "x"                 : [0.5, 12.5, "Sector"],
             "y"                 : [-2.5, 2.5,  "Wheel"],
             "z"                 : [0.0, 1.0, "DT Segment Reconstruction Efficiency"],
-            "option"            : "colz",
+            "option"            : "gridBySectorcolz",
             "legendTitle"       : "DT Segment Reconstruction Efficiency  -  whole barrel",
             "caption"           : "13.5 fb^{-1} (2017 data, 13 TeV)",
             "logo"              : ["CMS", "Preliminary"],
@@ -539,11 +539,46 @@
         "output"    :
         {
             "directory"         : "plots/",
-            "filenamePlot"      : "eff_sec_vs_wh_no_zoom_all",
+            "filenamePlot"      : "eff_sec_vs_wh_no_zoom_all_one",
             "fileType"          : ["png", "pdf"]
         }
     },
-
+    
+    "Efficiency vs sec vs wheel all two"   :
+    {
+        "comment"   : "Efficiency sec vs wheel all",
+        "inputs"    :
+        {
+            "all"   :
+            {
+                "label"             : "",
+                "legendEntry"       : "",
+                "filename"          : "results.root",
+                "folder"            : "",
+                "plot"		    : "effSecVsWhAllTwo"
+	    }
+        },
+        "plot"      :
+	{
+	    "x"                 : [1.0, 21.0, ""],
+            "y"                 : [1.0, 13.0,  "Sector"],
+            "z"                 : [0.0, 1.0, "DT Segment Reconstruction Efficiency"],
+            "option"            : "gridByWheelcolz",
+            "legendTitle"       : "DT Segment Reconstruction Efficiency  -  whole barrel",
+            "caption"           : "13.5 fb^{-1} (2017 data, 13 TeV)",
+            "logo"              : ["CMS", "Preliminary"],
+            "colorMap"          : [1, 2, 3, 4, 5, 6, 7, 8, 9],
+            "markerMap"         : [20, 21, 22, 23, 24, 25, 26],
+            "legendRange"       : [0.030, 0.67, 0.95, 0.935]
+        },
+        "output"    :
+        {
+            "directory"         : "plots/",
+            "filenamePlot"      : "eff_sec_vs_wh_no_zoom_all_two",
+            "fileType"          : ["png", "pdf"]
+        }
+    },
+    
     "Efficiency vs sec vs wheel MB1 no zoom"   :
     {
         "comment"   : "Efficiency sec vs wheel MB1",
@@ -563,7 +598,7 @@
             "x"                 : [1.0, 13.0, "Sector"],
             "y"                 : [-2.0, 3.0,  "Wheel"],
             "z"                 : [0.0, 1.0, "DT Segment Reconstruction Efficiency"],
-            "option"            : "colztext",
+            "option"            : "gridcolztext",
             "legendTitle"       : "DT Segment Reconstruction Efficiency  -  MB1",
             "caption"           : "13.5 fb^{-1} (2017 data, 13 TeV)",
             "logo"              : ["CMS", "Preliminary"],
@@ -598,7 +633,7 @@
             "x"                 : [1.0, 13.0, "Sector"],
             "y"                 : [-2.0, 3.0,  "Wheel"],
             "z"                 : [0.0, 1.0, "DT Segment Reconstruction Efficiency"],
-            "option"            : "colztext",
+            "option"            : "gridcolztext",
             "legendTitle"       : "DT Segment Reconstruction Efficiency  -  MB2",
             "caption"           : "13.5 fb^{-1} (2017 data, 13 TeV)",
             "logo"              : ["CMS", "Preliminary"],
@@ -633,7 +668,7 @@
             "x"                 : [1.0, 13.0, "Sector"],
             "y"                 : [-2.0, 3.0,  "Wheel"],
             "z"                 : [0.00, 1.0, "DT Segment Reconstruction Efficiency"],
-            "option"            : "colztext",
+            "option"            : "gridcolztext",
             "legendTitle"       : "DT Segment Reconstruction Efficiency  -  MB3",
             "caption"           : "13.5 fb^{-1} (2017 data, 13 TeV)",
             "logo"              : ["CMS", "Preliminary"],
@@ -668,7 +703,7 @@
             "x"                 : [1.0, 15.0, "Sector"],
             "y"                 : [-2.0, 3.0,  "Wheel"],
             "z"                 : [0.0, 1.0, "DT Segment Reconstruction Efficiency"],
-            "option"            : "colztext",
+            "option"            : "gridcolztext",
             "legendTitle"       : "DT Segment Reconstruction Efficiency  -  MB4",
             "caption"           : "13.5 fb^{-1} (2017 data, 13 TeV)",
             "logo"              : ["CMS", "Preliminary"],
@@ -795,7 +830,7 @@
             "x"                 : [-3.15, 3.15, "muon #phi"],
             "y"                 : [-1.4, 1.4,  "muon #eta"],
             "z"                 : [0.0, 1.0, "DT Segment Reconstruction Efficiency"],
-            "option"            : "colz",
+            "option"            : "gridcolz",
             "legendTitle"       : "DT Segment Reconstruction Efficiency  -  MB1",
             "caption"           : "13.5 fb^{-1} (2017 data, 13 TeV)",
             "logo"              : ["CMS", "Preliminary"],
@@ -830,7 +865,7 @@
             "x"                 : [-3.15, 3.15, "muon #phi"],
             "y"                 : [-1.4, 1.4,  "muon #eta"],
             "z"                 : [0.0, 1.0, "DT Segment Reconstruction Efficiency"],
-            "option"            : "colz",
+            "option"            : "gridcolz",
             "legendTitle"       : "DT Segment Reconstruction Efficiency  -  MB2",
             "caption"           : "13.5 fb^{-1} (2017 data, 13 TeV)",
             "logo"              : ["CMS", "Preliminary"],
@@ -865,7 +900,7 @@
             "x"                 : [-3.15, 3.15, "muon #phi"],
             "y"                 : [-1.4, 1.4,  "muon #eta"],
             "z"                 : [0.0, 1.0, "DT Segment Reconstruction Efficiency"],
-            "option"            : "colz",
+            "option"            : "gridcolz",
             "legendTitle"       : "DT Segment Reconstruction Efficiency  -  MB3",
             "caption"           : "13.5 fb^{-1} (2017 data, 13 TeV)",
             "logo"              : ["CMS", "Preliminary"],
@@ -900,7 +935,7 @@
             "x"                 : [-3.15, 3.15, "muon #phi"],
             "y"                 : [-1.4, 1.4,  "muon #eta"],
             "z"                 : [0.0, 1.0, "DT Segment Reconstruction Efficiency"],
-            "option"            : "colz",
+            "option"            : "gridcolz",
             "legendTitle"       : "DT Segment Reconstruction Efficiency  -  MB4",
             "caption"           : "13.5 fb^{-1} (2017 data, 13 TeV)",
             "logo"              : ["CMS", "Preliminary"],
