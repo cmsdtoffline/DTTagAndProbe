@@ -514,17 +514,17 @@
         "comment"   : "Efficiency sec vs wheel all",
         "inputs"    :
         {
-             "all"   :
+            "all"   :
             {
                 "label"             : "",
                 "legendEntry"       : "",
                 "filename"          : "results.root",
                 "folder"            : "",
                 "plot"		    : "effSecVsWhAllOne"
-	     }
-        },
+            }
+	},
         "plot"      :
-	{
+        {
             "x"                 : [0.5, 12.5, "Sector"],
             "y"                 : [-2.5, 2.5,  "Wheel"],
             "z"                 : [0.0, 1.0, "DT Segment Reconstruction Efficiency"],
@@ -543,23 +543,23 @@
             "fileType"          : ["png", "pdf"]
         }
     },
-
+    
     "Efficiency vs sec vs wheel all two"   :
     {
         "comment"   : "Efficiency sec vs wheel all",
         "inputs"    :
         {
-             "all"   :
+            "all"   :
             {
                 "label"             : "",
                 "legendEntry"       : "",
                 "filename"          : "results.root",
                 "folder"            : "",
                 "plot"		    : "effSecVsWhAllTwo"
-	     }
+	    }
         },
         "plot"      :
-        {
+	{
 	    "x"                 : [1.0, 21.0, ""],
             "y"                 : [1.0, 13.0,  "Sector"],
             "z"                 : [0.0, 1.0, "DT Segment Reconstruction Efficiency"],
