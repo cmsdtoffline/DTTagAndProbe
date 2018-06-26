@@ -27,15 +27,6 @@ def efficiencyPalette() :
         else :
             rgb = [0.98-0.098*(iBin-90), 0.80, 0.00]
 
-        #if iBin < 89 :
-        #    rgb = [0.80+0.002*iBin, 0.00+0.0055*iBin, 0.00]
-    
-        #elif iBin < 94 :
-        #    rgb = [0.80+0.002*iBin, 0.00+0.0055*iBin+0.10+0.05*(iBin-89), 0.00]
-      
-        #else :
-        #    rgb = [0.98-0.196*(iBin-95), 0.80, 0.00]
-
         pcol.append(TColor.GetColor(rgb[0], rgb[1], rgb[2]))
         
     return pcol
@@ -170,12 +161,21 @@ for keyPlot in config:
         hasGrid = option.find("grid") > -1
         if hasGrid :
             option = option.replace("grid","")
+
+        hasChamberSummary  = option.find("chamberSummary") > -1
+        if hasChamberSummary :
+            option = option.replace("chamberSummary","")
+
+        hasCleanEmptyBins = option.find("cleanEmptyBins") > -1
+        if hasCleanEmptyBins :
+            option = option.replace("cleanEmptyBins","")
+
             
         plotX  = config[keyPlot]['plot']['x']
         plotY  = config[keyPlot]['plot']['y']
         # Generate superimposed graph using TMultiHisto
  
-        if plotY[2].find("No. chambers") > -1:
+        if hasChamberSummary :
             gStyle.SetOptStat("emu")
             gStyle.SetStatX(0.9)
             gStyle.SetStatY(0.9)
@@ -192,16 +192,34 @@ for keyPlot in config:
 
             histograms[iHisto].SetTitle(";"+plotX[2]+";"+plotY[2])
 
-            if plotY[2].find("No. chambers") > -1:
+            if hasChamberSummary :
                 histograms[iHisto].SetFillColor(kOrange-2)
                 
             if iHisto == 0 :
                 if histoDim == 2 :
                     histograms[iHisto].Draw(option)
                 else :
-                    histograms[iHisto].Draw(option)
+                    if hasCleanEmptyBins :
+                        histograms[iHisto].Paint(option + "AP")
+                        histo = histograms[iHisto].GetPaintedGraph()
+                        for iPoint in reversed(range(0,histo.GetN())) :
+                            pointY = histo.GetY()[iPoint]
+                            if pointY < 0.05 :
+                                histo.RemovePoint(iPoint)
+                            histo.Draw(option + "AP")
+                    else :
+                        histograms[iHisto].Draw(option)
             else :
-                histograms[iHisto].Draw('same' + option)
+                if hasCleanEmptyBins :
+                    histograms[iHisto].Paint("same" + option)
+                    histo = histograms[iHisto].GetPaintedGraph()
+                    for iPoint in reversed(range(0,histo.GetN())) :
+                        pointY = histo.GetY()[iPoint]
+                        if pointY < 0.005 :
+                            histo.RemovePoint(iPoint)
+                        histo.Draw("same" + option + "P")
+                else :
+                    histograms[iHisto].Draw('same' + option)
 
             canvas.Update()
 
@@ -226,11 +244,7 @@ for keyPlot in config:
                 histo.SetMaximum(plotZ[1])
                 histo.SetContour(nBins)
                 histo.Draw(option)
-
-                if hasGrid :
-                    histo.GetXaxis().SetNdivisions(histo.GetNbinsX() / 2,True)
-                    histo.GetYaxis().SetNdivisions(histo.GetNbinsY() / 2,True)
-
+                
                 if hasGridBySector :
                     histo.GetXaxis().SetNdivisions(histo.GetNbinsX() / 2,True)
                     line = TLine();
@@ -262,12 +276,13 @@ for keyPlot in config:
                     for x in range(1,13) :
                         histo.GetYaxis().SetBinLabel(x,str(x))
                         
-                histoClone = histo.Clone()
-                histoClone.GetXaxis().SetNdivisions(histo.GetNbinsX(),True)
-                histoClone.GetYaxis().SetNdivisions(histo.GetNbinsY(),True)
-                histoClone.GetXaxis().SetTickLength(0.01)
-                histoClone.GetYaxis().SetTickLength(0.01)
-                histoClone.Draw("same axig")
+                if hasGrid or hasGridBySector or hasGridByWheel :
+                    histoClone = histo.Clone()
+                    histoClone.GetXaxis().SetNdivisions(histo.GetNbinsX(),True)
+                    histoClone.GetYaxis().SetNdivisions(histo.GetNbinsY(),True)
+                    histoClone.GetXaxis().SetTickLength(0.01)
+                    histoClone.GetYaxis().SetTickLength(0.01)
+                    histoClone.Draw("same axig")
             elif histoClass == "TH2F" :
                 gStyle.SetPalette(1)
                 histo.GetYaxis().SetRangeUser(plotY[0], plotY[1])
