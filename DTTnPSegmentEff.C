@@ -93,7 +93,7 @@ void DTTnPSegmentEff::book()
   
   m_plots["effChambAll"] = new TH1F("effChambAll",
 				    "segment efficiency chamber summary;efficiency;# chambers",
-				    50,0.9,1.);
+				    75,0.9,1.05);
 
   for (Int_t iCh = 1; iCh < 5; ++iCh)
     {
@@ -131,7 +131,7 @@ void DTTnPSegmentEff::book()
       hName = "effAccVsEta" + iChTag.str();
       m_effs[hName] = new TEfficiency(hName.c_str(),
 				      "segment efficiency x acceptance vs #eta;muon #eta;Efficiency",
-				      96,-1.2,1.2);
+				      48,-1.2,1.2);
       hName = "effAccVsPhiPlus" + iChTag.str();
       m_effs[hName] = new TEfficiency(hName.c_str(),
 				      "segment efficiency x acceptance vs #phi for mu^{+};muon #phi;Efficiency",
@@ -170,7 +170,7 @@ void DTTnPSegmentEff::book()
       hName = "effVsRun" + iChTag.str();
       m_effs[hName] = new TEfficiency(hName.c_str(),
 				      "segment efficiency vs run number;run number;Efficiency",
-				      258, 315252., 315510.);
+				      258, 315252., 316723.);
 
       hName = "effVsVtx" + iChTag.str();
       m_effs[hName] = new TEfficiency(hName.c_str(),
