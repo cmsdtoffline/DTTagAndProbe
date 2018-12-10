@@ -28,7 +28,7 @@ class DTTnPBaseAnalysis : public DTAnalyzer
   void Loop() override;
 
  protected:
-  void Init(TTree* tree) override { DTAnalyzer::Init(tree); };
+  void Init(TChain* chain) override { DTAnalyzer::Init(chain); };
 
   void pharseConfig(const std::string & configFile);
 

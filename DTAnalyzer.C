@@ -3,11 +3,11 @@
 #include <TStyle.h>
 #include <TCanvas.h>
 
-DTAnalyzer::DTAnalyzer(TTree *tree) : fChain(0) 
+DTAnalyzer::DTAnalyzer(TChain *chain) : fChain(0) 
 {
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.
-  Init(tree);
+  Init(chain);
 }
 
 DTAnalyzer::~DTAnalyzer()
@@ -35,7 +35,7 @@ Long64_t DTAnalyzer::LoadTree(Long64_t entry)
    return centry;
 }
 
-void DTAnalyzer::Init(TTree *tree)
+void DTAnalyzer::Init(TChain *chain)
 {
    // The Init() function is called when the selector needs to initialize
    // a new tree or chain. Typically here the branch addresses and branch
@@ -254,8 +254,8 @@ void DTAnalyzer::Init(TTree *tree)
    RpcRecHitTwinMuxRoll = 0;
    RpcRecHitTwinMuxRing = 0;
    // Set branch addresses and branch pointers
-   if (!tree) return;
-   fChain = tree;
+   if (!chain) return;
+   fChain = chain;
    fCurrent = -1;
    fChain->SetMakeClass(1);
 

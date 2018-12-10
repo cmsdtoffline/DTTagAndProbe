@@ -16,8 +16,8 @@ void DTTnPSegmentEff::Loop()
   if (fChain == 0) return;
 
   Long64_t nentries = (m_sampleConfig.nEvents > 0 && 
-		       fChain->GetEntriesFast() > m_sampleConfig.nEvents) ? 
-                       m_sampleConfig.nEvents : fChain->GetEntriesFast();
+		       fChain->GetEntries() > m_sampleConfig.nEvents) ? 
+                       m_sampleConfig.nEvents : fChain->GetEntries();
 
   std::cout << "[DTTnPSegmentEff::Loop] going to process "
 	    << nentries << " entries\n" << std::flush;
@@ -27,7 +27,7 @@ void DTTnPSegmentEff::Loop()
     {
       Long64_t ientry = LoadTree(jentry);
       if (ientry < 0) break;
-      nb = fChain->GetEntry(jentry);   nbytes += nb;
+      nb = fChain->GetEvent(jentry);   nbytes += nb;
 
       if(jentry % 10000 == 0) 
 	std::cout << "[DTTnPSegmentEff::Loop] processed : " 
@@ -170,7 +170,7 @@ void DTTnPSegmentEff::book()
       hName = "effVsRun" + iChTag.str();
       m_effs[hName] = new TEfficiency(hName.c_str(),
 				      "segment efficiency vs run number;run number;Efficiency",
-				      258, 315252., 316723.);
+				      1000, 315252., 325175);
 
       hName = "effVsVtx" + iChTag.str();
       m_effs[hName] = new TEfficiency(hName.c_str(),

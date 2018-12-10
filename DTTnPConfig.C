@@ -6,9 +6,9 @@ SampleConfig::SampleConfig(boost::property_tree::ptree::value_type & vt)
   try
     {
       nEvents  = vt.second.get<Float_t>("nEvents");
-      fileName = TString(vt.second.get<std::string>("fileName").c_str());
+      fileNames = toArrayTS(vt.second.get<std::string>("fileName").c_str());
       outputFileName = TString(vt.second.get<std::string>("outputFileName").c_str());
-      runs       = toArray(vt.second.get<std::string>("runs"));
+      runs       = toArrayI(vt.second.get<std::string>("runs"));
       sampleName = TString(vt.first.c_str());
     }
   
@@ -21,7 +21,7 @@ SampleConfig::SampleConfig(boost::property_tree::ptree::value_type & vt)
   
 }
 
-std::vector<int> SampleConfig::toArray(const std::string& entries)
+std::vector<int> SampleConfig::toArrayI(const std::string& entries)
 {
   
   std::vector<int> result;
@@ -29,6 +29,18 @@ std::vector<int> SampleConfig::toArray(const std::string& entries)
   std::string item;
   while(std::getline(sentries, item, ','))
     result.push_back(atoi(item.c_str()));
+  return result;
+  
+}
+
+std::vector<TString> SampleConfig::toArrayTS(const std::string& entries)
+{
+  
+  std::vector<TString> result;
+  std::stringstream sentries(entries);
+  std::string item;
+  while(std::getline(sentries, item, ','))
+    result.push_back(TString(item.c_str()));
   return result;
   
 }

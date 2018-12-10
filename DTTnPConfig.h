@@ -23,7 +23,7 @@ class SampleConfig
   
   // config parameters (public for direct access)
 
-  TString fileName;  
+  std::vector<TString> fileNames;  
   TString outputFileName;  
   TString sampleName;  
   Float_t nEvents;
@@ -39,7 +39,8 @@ class SampleConfig
   ~SampleConfig() {};
 
  private:
-  std::vector<int> toArray(const std::string & entries); 
+  std::vector<int>     toArrayI(const std::string & entries); 
+  std::vector<TString> toArrayTS(const std::string & entries); 
     
 };
 

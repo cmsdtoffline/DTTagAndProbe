@@ -4,13 +4,22 @@ DTTnPBaseAnalysis::DTTnPBaseAnalysis(const std::string & configFile)
 {
 
   pharseConfig(configFile);
-  TFile *fileIn = new TFile(m_sampleConfig.fileName,"read");
-
-  TTree * tree = 0;
-  fileIn->GetObject("DTTree",tree);
-
-  fileIn->GetObject("triggerFilterNames",m_triggerFilterNames);
-
+ 
+  TChain * chain = new TChain("DTTree");
+ 
+  bool isFirst = true;
+  for (const auto & fileName : m_sampleConfig.fileNames)
+    {
+      chain->Add(fileName);
+      
+      if (isFirst)
+	{
+	  TFile *fileIn = new TFile(fileName,"read"); 
+	  fileIn->GetObject("triggerFilterNames",m_triggerFilterNames);
+	  isFirst = false;
+	}
+    }
+  
   m_hltFilterId = -1;
   Int_t hltFilterNameId = 0;
   
@@ -30,7 +39,7 @@ DTTnPBaseAnalysis::DTTnPBaseAnalysis(const std::string & configFile)
   else
     std::cout << "[DTTnPBaseAnalysis::DTTnPBaseAnalysis] Not found match for any HLT filter in ntuples, TnP will fail!"  << std::endl;
 
-  Init(tree);
+  Init(chain);
 
 }
 
@@ -75,15 +84,15 @@ void DTTnPBaseAnalysis::Loop()
   if (fChain == 0) return;
 
   Long64_t nentries = (m_sampleConfig.nEvents > 0 && 
-		       fChain->GetEntriesFast() > m_sampleConfig.nEvents) ? 
-                       m_sampleConfig.nEvents : fChain->GetEntriesFast();
+		       fChain->GetEntries() > m_sampleConfig.nEvents) ? 
+                       m_sampleConfig.nEvents : fChain->GetEntries();
 
   Long64_t nbytes = 0, nb = 0;
   for (Long64_t jentry=0; jentry<nentries;jentry++) 
     {
       Long64_t ientry = LoadTree(jentry);
       if (ientry < 0) break;
-      nb = fChain->GetEntry(jentry);   nbytes += nb;
+      nb = fChain->GetEvent(jentry);   nbytes += nb;
 
       if(jentry % 10000 == 0) 
 	std::cout << "[DTTnPBaseAnalysis::Loop] processed : " 
