@@ -50,8 +50,6 @@ TagAndProbeConfig::TagAndProbeConfig(boost::property_tree::ptree::value_type & v
 
   try
     {      
-      hlt_path = vt.second.get<std::string>("hlt_path");
-
       pair_minInvMass = vt.second.get<Float_t>("pair_minInvMass");
       pair_maxInvMass = vt.second.get<Float_t>("pair_maxInvMass");
       pair_maxAbsDz   = vt.second.get<Float_t>("pair_maxAbsDz");
@@ -60,8 +58,7 @@ TagAndProbeConfig::TagAndProbeConfig(boost::property_tree::ptree::value_type & v
       tag_minPt  = vt.second.get<Float_t>("tag_minPt");
       tag_isoCut = vt.second.get<Float_t>("tag_isoCut");
 
-      tag_hltFilter = vt.second.get<std::string>("tag_hltFilter");
-      tag_hltDrCut  = vt.second.get<Float_t>("tag_hltDrCut");
+      tag_useIsoHltPath = vt.second.get<bool>("tag_useIsoHltPath");
       
       probe_minPt     = vt.second.get<Float_t>("probe_minPt");
       probe_maxAbsEta = toArray(vt.second.get<std::string>("probe_maxAbsEta"));
