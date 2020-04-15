@@ -95,7 +95,7 @@ void DTTnPSegmentEff::book()
 				    "segment efficiency chamber summary;efficiency;# chambers",
 				    75,0.9,1.05);
 
-  for (Int_t iCh = 1; iCh < 5; ++iCh)
+  for (Int_t iCh = 1; iCh <= N_STATIONS; ++iCh)
     {
       std::stringstream iChTag;
       iChTag << "MB" << iCh;
@@ -201,11 +201,11 @@ void DTTnPSegmentEff::harvesting()
   std::vector<std::string> effNames  = { "effSecVsWhMB1", "effSecVsWhMB2", "effSecVsWhMB3", "effSecVsWhMB4" };
   std::vector<std::string> plotNames = { "effChambMB1",   "effChambMB2",   "effChambMB3",   "effChambMB4" };
 
-  std::vector<std::string>::const_iterator effNamesIt  = effNames.begin();
-  std::vector<std::string>::const_iterator plotNamesIt = plotNames.begin();
+  auto effNamesIt  = effNames.cbegin();
+  auto effNamesEnd = effNames.cend();
 
-  std::vector<std::string>::const_iterator effNamesEnd  = effNames.end();
-  std::vector<std::string>::const_iterator plotNamesEnd = plotNames.end();
+  auto plotNamesIt  = plotNames.cbegin();
+  auto plotNamesEnd = plotNames.cend();
 
   for (; effNamesIt != effNamesEnd && plotNamesIt != plotNamesEnd; ++effNamesIt, ++plotNamesIt)
     {
@@ -230,7 +230,7 @@ void DTTnPSegmentEff::harvesting()
 
 }
 
-void DTTnPSegmentEff::fill(const Int_t iMu)
+void DTTnPSegmentEff::fill(const std::size_t iMu)
 {
 
   TLorentzVector probeVec;
@@ -239,7 +239,7 @@ void DTTnPSegmentEff::fill(const Int_t iMu)
 			mu_phi->at(iMu),
 			0.106);
 
-   for (Int_t iCh = 1; iCh < 5; ++iCh)
+   for (Int_t iCh = 1; iCh <= N_STATIONS; ++iCh)
     {
       std::stringstream iChTag;
       iChTag << "MB" << iCh;
@@ -251,23 +251,23 @@ void DTTnPSegmentEff::fill(const Int_t iMu)
       if ( nMatchInOtherCh >= m_tnpConfig.probe_minNMatchedSeg ||
 	   mu_trkMu_numberOfMatchedRPCLayers->at(iMu) >= m_tnpConfig.probe_minNRPCLayers )
 	{
-	  std::pair<Int_t,Int_t> iPassingProbe = getPassingProbe(iMu,iCh);
-	  Int_t iPassingSeg   = iPassingProbe.first;
-	  Int_t iPassingMatch = iPassingProbe.second;
+	  auto iPassingProbe = getPassingProbe(iMu,iCh);
+	  auto iPassingSeg   = iPassingProbe.first;
+	  auto iPassingMatch = iPassingProbe.second;
 	  
 	  std::string hName = "effAccVsEta" + iChTag.str();
-	  m_effs[hName]->Fill(iPassingSeg >= 0,mu_eta->at(iMu));
+	  m_effs[hName]->Fill(iPassingSeg != NULL_IDX,mu_eta->at(iMu));
 
 	  if (mu_charge->at(iMu) == 1)
             {
               hName = "effAccPhiVsEtaPlus" + iChTag.str();
-              m_effs[hName]->Fill(iPassingSeg >= 0,mu_phi->at(iMu),mu_eta->at(iMu));
+              m_effs[hName]->Fill(iPassingSeg != NULL_IDX,mu_phi->at(iMu),mu_eta->at(iMu));
             }
 
           if (mu_charge->at(iMu) == -1)
             {
               hName = "effAccPhiVsEtaMinus" + iChTag.str();
-              m_effs[hName]->Fill(iPassingSeg >= 0,mu_phi->at(iMu),mu_eta->at(iMu));
+              m_effs[hName]->Fill(iPassingSeg != NULL_IDX,mu_phi->at(iMu),mu_eta->at(iMu));
             }
 
 	  if (std::abs(probeVec.Eta()) < m_tnpConfig.probe_maxAbsEta[iCh - 1])
@@ -282,7 +282,7 @@ void DTTnPSegmentEff::fill(const Int_t iMu)
 	      hName = "probePhi" + iChTag.str(); 
 	      m_plots[hName]->Fill(probeVec.Phi());
 
-	      if (iPassingSeg > -1)
+	      if (iPassingSeg != NULL_IDX)
 		{
 
 		  Float_t xMu = getXY<Float_t>(mu_matches_x,iMu,iPassingMatch); 
@@ -291,8 +291,8 @@ void DTTnPSegmentEff::fill(const Int_t iMu)
 		  Float_t xSeg = seg_posLoc_x->at(iPassingSeg);
 		  Float_t ySeg = seg_posLoc_y->at(iPassingSeg);
 	  
-		  Float_t dX = std::abs(xSeg-xMu);
-		  Float_t dY = std::abs(ySeg-yMu);
+		  Float_t dX = std::abs(xSeg - xMu);
+		  Float_t dY = std::abs(ySeg - yMu);
 		  Float_t dR = sqrt(dX*dX + dY*dY);
 	  		  
 		  hName = "probeDrVsPt" + iChTag.str();
@@ -308,17 +308,17 @@ void DTTnPSegmentEff::fill(const Int_t iMu)
 	      if (mu_charge->at(iMu) == 1)
 		{
 		  hName = "effAccVsPhiPlus" + iChTag.str();
-		  m_effs[hName]->Fill(iPassingSeg >= 0,mu_phi->at(iMu));
+		  m_effs[hName]->Fill(iPassingSeg != NULL_IDX,mu_phi->at(iMu));
 		}
 	      
 	      if (mu_charge->at(iMu) == -1)
 		{
 		  hName = "effAccVsPhiMinus" + iChTag.str();
-		  m_effs[hName]->Fill(iPassingSeg >= 0,mu_phi->at(iMu));
+		  m_effs[hName]->Fill(iPassingSeg != NULL_IDX,mu_phi->at(iMu));
 		}
 	      
 	      hName = "effAccVsPt" + iChTag.str();
-	      m_effs[hName]->Fill(iPassingSeg >= 0,probeVec.Pt());
+	      m_effs[hName]->Fill(iPassingSeg != NULL_IDX,probeVec.Pt());
 	      
 	      for (std::size_t iMatch = 0; iMatch < mu_nMatches->at(iMu); ++iMatch)
 		{
@@ -336,21 +336,21 @@ void DTTnPSegmentEff::fill(const Int_t iMu)
 		      yBorderMu < m_tnpConfig.probe_maxBorderDy )
 		    { 
 		      
-		      iPassingSeg =  getPassingProbeInCh(iMu,stMu,secMu,whMu,xMu,yMu);
+		      iPassingSeg =  getPassingProbeInCh(stMu,secMu,whMu,xMu,yMu);
 		      
 		      hName = "effVsPt" + iChTag.str();
-		      m_effs[hName]->Fill(iPassingSeg >= 0,probeVec.Pt());
+		      m_effs[hName]->Fill(iPassingSeg != NULL_IDX,probeVec.Pt());
 		      
 		      hName = "effSecVsWh" + iChTag.str();
-		      m_effs[hName]->Fill(iPassingSeg >= 0,secMu + 0.5,whMu + 0.5);
+		      m_effs[hName]->Fill(iPassingSeg != NULL_IDX,secMu + 0.5,whMu + 0.5);
 
 		      Float_t secBinOne = secMu == 13 ? 4 : secMu==14 ? 10 : secMu;
 		      secBinOne += (stMu % 2 == 1) ? -0.1 : 0.1;
 
-		      Float_t whBinOne = whMu + ((stMu -1) / 2 == 0 ? -0.1 : 0.1);
+		      Float_t whBinOne = whMu + ((stMu - 1) / 2 == 0 ? -0.1 : 0.1);
 		      
 		      hName = "effSecVsWhAllOne";
-		      m_effs[hName]->Fill(iPassingSeg >= 0,secBinOne,whBinOne);
+		      m_effs[hName]->Fill(iPassingSeg != NULL_IDX,secBinOne,whBinOne);
 
 		      Float_t secBinTwo = secMu == 13 ? 4 : secMu==14 ? 10 : secMu;
 		      secBinTwo += 0.1;
@@ -358,19 +358,19 @@ void DTTnPSegmentEff::fill(const Int_t iMu)
 		      Float_t whBinTwo = whMu + 3.1 + ((stMu - 1) * 5);
 		      
 		      hName = "effSecVsWhAllTwo";
-		      m_effs[hName]->Fill(iPassingSeg >= 0,whBinTwo,secBinTwo);
+		      m_effs[hName]->Fill(iPassingSeg != NULL_IDX,whBinTwo,secBinTwo);
 
 		      hName = "effVsLumi" + iChTag.str();
-		      m_effs[hName]->Fill(iPassingSeg >= 0,environment_instLumi);
+		      m_effs[hName]->Fill(iPassingSeg != NULL_IDX,environment_instLumi);
 
 		      hName = "effVsVtx" + iChTag.str();
-		      m_effs[hName]->Fill(iPassingSeg >= 0,environment_nPV);
+		      m_effs[hName]->Fill(iPassingSeg != NULL_IDX,environment_nPV);
 
 		      hName = "effVsRun" + iChTag.str();
-		      m_effs[hName]->Fill(iPassingSeg >= 0,event_runNumber);
+		      m_effs[hName]->Fill(iPassingSeg != NULL_IDX,event_runNumber);
 		      
 		      hName = "effVsNHitsPhi" + iChTag.str();
-		      Int_t nPhiHits = iPassingSeg >= 0 ? seg_phi_nHits->at(iPassingSeg) : 0;
+		      Int_t nPhiHits = iPassingSeg != NULL_IDX ? seg_phi_nHits->at(iPassingSeg) : 0;
 		      
 		      for (Int_t phiHits = 1; phiHits < 9; ++phiHits)
 			m_effs[hName]->Fill(nPhiHits >= phiHits, phiHits);
@@ -390,18 +390,18 @@ void DTTnPSegmentEff::fill(const Int_t iMu)
 void DTTnPSegmentEff::endJob() 
 {
 
-  for (Int_t iCh = 1; iCh < 5; ++iCh)
+  for (Int_t iCh = 1; iCh <= N_STATIONS; ++iCh)
     {
       std::stringstream iChTag;
       iChTag << "MB" << iCh;
 
-      for (Int_t iWh = 1; iWh < 6; ++iWh)
+      for (Int_t iWh = 1; iWh <= N_WHEELS; ++iWh)
 	{
 
-	  for (Int_t iSec = 1; iSec < 15; ++iSec)
+	  for (Int_t iSec = 1; iSec <= N_SECTORS; ++iSec)
 	    {
 
-	      if (iSec > 12 && iCh !=4)
+	      if (iSec > 12 && iCh != 4)
 		continue;
 	      
 	      std::string hName   = "effChamb" + iChTag.str();
@@ -416,12 +416,13 @@ void DTTnPSegmentEff::endJob()
   
 }
 
-std::pair<Int_t,Int_t> DTTnPSegmentEff::getPassingProbe(const Int_t iMu,
+std::pair<std::size_t,
+          std::size_t> DTTnPSegmentEff::getPassingProbe(const std::size_t iMu,
 							const Int_t iCh) 
 {
 
-  Int_t iBestMatch = -1;
-  Int_t iBestSeg   = -1;
+  Int_t iBestMatch = NULL_IDX;
+  Int_t iBestSeg   = NULL_IDX;
   Float_t bestSegDr = 999.;	  
 	  
   for (std::size_t iMatch = 0; iMatch < mu_nMatches->at(iMu); ++iMatch)
@@ -435,17 +436,17 @@ std::pair<Int_t,Int_t> DTTnPSegmentEff::getPassingProbe(const Int_t iMu,
       if (stMu == iCh)
 	{
 	  
-	  Int_t iSeg = getPassingProbeInCh(iMu,stMu,secMu,
-					   whMu,xMu,yMu);
+	  auto iSeg = getPassingProbeInCh(stMu,secMu,whMu,
+					  xMu,yMu);
 
-	  if (iSeg < 0)
+	  if (iSeg == NULL_IDX)
 	    continue;
 	  
           Float_t xSeg = seg_posLoc_x->at(iSeg);
           Float_t ySeg = seg_posLoc_y->at(iSeg);
 	  
-          Float_t dX = std::abs(xSeg-xMu);
-          Float_t dY = std::abs(ySeg-yMu);
+          Float_t dX = std::abs(xSeg - xMu);
+          Float_t dY = std::abs(ySeg - yMu);
           Float_t dR = sqrt(dX*dX + dY*dY);
 	  
           if(dR < bestSegDr)
@@ -459,20 +460,20 @@ std::pair<Int_t,Int_t> DTTnPSegmentEff::getPassingProbe(const Int_t iMu,
       
     }
 
-  return std::pair<Int_t,Int_t>(iBestSeg,iBestMatch);
+  return std::pair<std::size_t,
+                   std::size_t>(iBestSeg,iBestMatch);
 
 }
 
 
-Int_t DTTnPSegmentEff::getPassingProbeInCh(const Int_t iMu,
-					   const Int_t stMu,
-					   const Int_t secMu,
-					   const Int_t whMu,
-					   const Int_t xMu,
-					   const Int_t yMu)
+std::size_t DTTnPSegmentEff::getPassingProbeInCh(const Int_t stMu,
+						 const Int_t secMu,
+						 const Int_t whMu,
+						 const Int_t xMu,
+						 const Int_t yMu)
 {
   
-  Int_t iBestSeg   = -1;
+  Int_t iBestSeg   = NULL_IDX;
   Float_t bestSegDr = 999.;
   Float_t bestSegDx = 999.;
   Float_t bestSegDy = 999.;
@@ -486,8 +487,8 @@ Int_t DTTnPSegmentEff::getPassingProbeInCh(const Int_t iMu,
       Float_t xSeg = seg_posLoc_x->at(iSeg);
       Float_t ySeg = seg_posLoc_y->at(iSeg);
       
-      Float_t dX = std::abs(xSeg-xMu);
-      Float_t dY = std::abs(ySeg-yMu);
+      Float_t dX = std::abs(xSeg - xMu);
+      Float_t dY = std::abs(ySeg - yMu);
       Float_t dR = sqrt(dX*dX + dY*dY);
       
       if(whMu  == whSeg  &&
@@ -498,7 +499,7 @@ Int_t DTTnPSegmentEff::getPassingProbeInCh(const Int_t iMu,
          dX < m_tnpConfig.passing_probe_maxTkSegDx &&
 	 dY < m_tnpConfig.passing_probe_maxTkSegDy )
 	{
-	  iBestSeg = static_cast<Int_t>(iSeg);
+	  iBestSeg = iSeg;
 	  bestSegDr = dR;
 	  bestSegDx = dX;
 	  bestSegDy = dY;
