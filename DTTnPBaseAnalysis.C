@@ -45,65 +45,6 @@ void DTTnPBaseAnalysis::pharseConfig(const std::string & configFile)
 
 }
 
-
-void DTTnPBaseAnalysis::Loop()
-{
-
-  TFile outputFile(m_sampleConfig.outputFileName,"recreate");
-  outputFile.cd();
-
-  book();
-
-  if (fChain == 0) return;
-
-  Long64_t nentries = (m_sampleConfig.nEvents > 0 && 
-		       fChain->GetEntries() > m_sampleConfig.nEvents) ? 
-                       m_sampleConfig.nEvents : fChain->GetEntries();
-
-  Long64_t nbytes = 0, nb = 0;
-  for (Long64_t jentry=0; jentry<nentries;jentry++) 
-    {
-      Long64_t ientry = LoadTree(jentry);
-      if (ientry < 0) break;
-      nb = fChain->GetEvent(jentry);   nbytes += nb;
-
-      if(jentry % 10000 == 0) 
-	std::cout << "[DTTnPBaseAnalysis::Loop] processed : " 
-		  << jentry << " entries\r" << std::flush;
-
-      bool hasGoodRun = false;
-
-      for (const auto & run : m_sampleConfig.runs)
-	{	  
-	  if (run == 0 ||
-	      run == event_runNumber)
-	    {
-	      hasGoodRun = true;
-	      break;
-	    }
-	    
-	}
-
-      if(!hasGoodRun)
-	continue;
-
-      auto tnpPairs = tnpSelection();
-
-      for(const auto & pair : tnpPairs) 
-	{ 
-
-	  fill(pair.second);
-
-	}
-
-    }
-
-  std::cout << std::endl; 
-  outputFile.Write();
-  outputFile.Close();
-
-}
-
 void DTTnPBaseAnalysis::book()
 {
 

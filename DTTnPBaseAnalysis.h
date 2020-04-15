@@ -25,10 +25,8 @@ class DTTnPBaseAnalysis : public DTNtupleBaseAnalyzer
   DTTnPBaseAnalysis(const std::string & configFile);
   ~DTTnPBaseAnalysis() { };
   
-  virtual void Loop() override;
-
  protected:
-  virtual void Init(TChain* chain) override { DTNtupleBaseAnalyzer::Init(chain); };
+  void Init(TChain* chain) override { DTNtupleBaseAnalyzer::Init(chain); };
 
   void pharseConfig(const std::string & configFile);
 
@@ -38,9 +36,7 @@ class DTTnPBaseAnalysis : public DTNtupleBaseAnalyzer
 
   Int_t nMatchedCh(const Int_t iMu, const Int_t iCh);  
 
-  virtual void book() override;
-  virtual void fill(Int_t iMu) { };
-  virtual void endJob() override { };
+  void book() override;
   
   TagAndProbeConfig m_tnpConfig;
   SampleConfig      m_sampleConfig;
