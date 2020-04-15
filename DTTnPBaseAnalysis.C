@@ -5,40 +5,13 @@ DTTnPBaseAnalysis::DTTnPBaseAnalysis(const std::string & configFile)
 
   pharseConfig(configFile);
  
-  TChain * chain = new TChain("DTTree");
+  TChain * chain = new TChain("dtNtupleProducer/DTTREE");
  
-  bool isFirst = true;
   for (const auto & fileName : m_sampleConfig.fileNames)
     {
       chain->Add(fileName);
-      
-      if (isFirst)
-	{
-	  TFile *fileIn = new TFile(fileName,"read"); 
-	  fileIn->GetObject("triggerFilterNames",m_triggerFilterNames);
-	  isFirst = false;
-	}
     }
   
-  m_hltFilterId = -1;
-  Int_t hltFilterNameId = 0;
-  
-  for (const auto & filterName : (*m_triggerFilterNames))
-    {
-      if (filterName.find(m_tnpConfig.tag_hltFilter) != std::string::npos)
-	{
-	  m_hltFilterId = hltFilterNameId;
-	  break;
-	}
-      hltFilterNameId++;
-    }
-
-  if (m_hltFilterId>=0)
-    std::cout << "[DTTnPBaseAnalysis::DTTnPBaseAnalysis] Found match for HLT filter : " 
-	      << m_triggerFilterNames->at(m_hltFilterId) << std::endl;
-  else
-    std::cout << "[DTTnPBaseAnalysis::DTTnPBaseAnalysis] Not found match for any HLT filter in ntuples, TnP will fail!"  << std::endl;
-
   Init(chain);
 
 }
@@ -103,7 +76,7 @@ void DTTnPBaseAnalysis::Loop()
       for (const auto & run : m_sampleConfig.runs)
 	{	  
 	  if (run == 0 ||
-	      run == runnumber)
+	      run == event_runNumber)
 	    {
 	      hasGoodRun = true;
 	      break;
@@ -153,7 +126,7 @@ void DTTnPBaseAnalysis::book()
 				 "probe # RPC layers;# tracker layers;#entries",
 				 30,-0.5,29.5); 
   m_plots["probeReliso"]  = new TH1F("probeReliso",
-				 "probe relative trk iso;isolation;#entries",
+				 "probe relative PF iso (#Delta#beta corrected);isolation;#entries",
 				 100,0.,5.); 
   m_plots["probeOrigAlgo"]  = new TH1F("probeOrigAlgo",
 				 "probe original algo;original algo;#entries",
@@ -165,69 +138,63 @@ vector<std::pair<Int_t,Int_t>> DTTnPBaseAnalysis::tnpSelection()
   
   vector<std::pair<Int_t,Int_t>> pairs;
   
-  for(Int_t iTag = 0; iTag < Nmuons; ++iTag) 
+  for(std::size_t iTag = 0; iTag < mu_nMuons; ++iTag) //CB int?
     {
       
       TLorentzVector tagVec;
-      tagVec.SetXYZM(Mu_px->at(iTag),
-		     Mu_py->at(iTag),
-		     Mu_pz->at(iTag),
-		     0.106);
+      tagVec.SetPtEtaPhiM(mu_pt->at(iTag),
+			  mu_eta->at(iTag),
+			  mu_phi->at(iTag),
+			  0.106);
       
-      bool tagQuality = 
-	Mu_isMuGlobal->at(iTag)     == 1 &&
-	Mu_isMuTrackerArb->at(iTag) == 1 &&
-	Mu_normchi2_glb->at(iTag)      < 10 &&
-	Mu_numberOfMatchedStations->at(iTag) >= 2 &&
-	Mu_numberOfHits_sta->at(iTag)        >  0 && 
-	Mu_numberOfPixelHits_trk->at(iTag)   >= 1 &&
-	Mu_numberOfTrackerLayers_trk->at(iTag) >= 6 &&
-	Mu_tkIsoR03_glb->at(iTag) / tagVec.Pt() < m_tnpConfig.tag_isoCut &&
-	tagVec.Pt() > m_tnpConfig.tag_minPt ;
+      bool tagQuality =
+	mu_isTight->at(iTag) == true &&
+	mu_pfIso04->at(iTag)  < m_tnpConfig.tag_isoCut &&
+	tagVec.Pt()           > m_tnpConfig.tag_minPt ;
       
       if(tagQuality && hasTrigger(iTag)) 
 	{
 	  
-	  for(Int_t iProbe = 0; iProbe < Nmuons; ++iProbe) 
+	  for(std::size_t iProbe = 0; iProbe < mu_nMuons; ++iProbe) 
 	    {
 	      
 	      if (iTag == iProbe) 
 		continue;
 	      
 	      TLorentzVector probeVec;
-	      probeVec.SetXYZM(Mu_px->at(iProbe),
-			       Mu_py->at(iProbe),
-			       Mu_pz->at(iProbe),
-			       0.106);
+	      probeVec.SetPtEtaPhiM(mu_pt->at(iProbe),
+				    mu_eta->at(iProbe),
+				    mu_phi->at(iProbe),
+				    0.106);
 	      
 	      bool probeQuality =
-		( Mu_isMuTrackerArb->at(iProbe) == 1 ||
-		  Mu_isMuRPC->at(iProbe) == 1 ) &&
-		Mu_origAlgo_trk->at(iProbe) != 14 && // the track is not created out of a STA mu based seeding
-		Mu_numberOfPixelHits_trk->at(iProbe)     >= m_tnpConfig.probe_minPixelHits &&
-		Mu_numberOfTrackerLayers_trk->at(iProbe) >= m_tnpConfig.probe_minTrkLayers &&
-		Mu_tkIsoR03_trk->at(iProbe) / probeVec.Pt() < m_tnpConfig.probe_isoCut &&
+		( mu_isTrackerArb->at(iProbe) == true ||
+		  mu_isRPC->at(iProbe)        == 1 )  &&
+		mu_trk_origAlgo->at(iProbe)                   != 14 && // the track is not created out of a STA mu based seeding
+		mu_trk_numberOfValidPixelHits->at(iProbe)     >= m_tnpConfig.probe_minPixelHits &&
+		mu_trk_numberOfValidTrackerLayers->at(iProbe) >= m_tnpConfig.probe_minTrkLayers &&
+		mu_pfIso04->at(iProbe)                         < m_tnpConfig.probe_isoCut &&
 		probeVec.Pt() > m_tnpConfig.probe_minPt;
 	      
-	      m_plots["probeNPixelHits"]->Fill(Mu_numberOfPixelHits_glb->at(iProbe));
- 	      m_plots["probeNTrkLayers"]->Fill(Mu_numberOfTrackerHits_glb->at(iProbe));
- 	      m_plots["probeNRPCLayers"]->Fill(Mu_isMuRPC->at(iProbe) ?
-					       Mu_numberOfRPCLayers_rpc->at(iProbe) : 0);
- 	      m_plots["probeReliso"]->Fill(Mu_tkIsoR03_glb->at(iProbe) / probeVec.Pt());
-	      m_plots["probeOrigAlgo"]->Fill(Mu_origAlgo_trk->at(iProbe));
+	      m_plots["probeNPixelHits"]->Fill(mu_trk_numberOfValidPixelHits->at(iProbe));
+ 	      m_plots["probeNTrkLayers"]->Fill(mu_trk_numberOfValidTrackerLayers->at(iProbe));
+ 	      m_plots["probeNRPCLayers"]->Fill(mu_isRPC->at(iProbe) ?
+					       mu_trkMu_numberOfMatchedRPCLayers->at(iProbe) : 0);
+ 	      m_plots["probeReliso"]->Fill(mu_pfIso04->at(iProbe));
+	      m_plots["probeOrigAlgo"]->Fill(mu_trk_origAlgo->at(iProbe));
 
 	      if (probeQuality)
 		{
 		  Float_t mass  = (tagVec + probeVec).M();
 		  Float_t tnpDr = tagVec.DeltaR(probeVec);
-		  Float_t tnpDz = Mu_dz_trk->at(iTag) - Mu_dz_trk->at(iProbe);
+		  Float_t tnpDz = mu_trk_dz->at(iTag) - mu_trk_dz->at(iProbe);
 
 		  m_plots["pairMass"]->Fill(mass);
 		  m_plots["probePtVsPairDr"]->Fill(probeVec.Pt(),tnpDr);
 		  m_plots["pairDz"]->Fill(tnpDz);
 		  
 		  if (std::abs(tnpDz) < m_tnpConfig.pair_maxAbsDz && 
-		      Mu_charge->at(iTag) * Mu_charge->at(iProbe) == -1 &&
+		      mu_charge->at(iTag) * mu_charge->at(iProbe) == -1 &&
 		      mass  > m_tnpConfig.pair_minInvMass && 
 		      mass  < m_tnpConfig.pair_maxInvMass &&
 		      tnpDr > m_tnpConfig.pair_minDr)
@@ -248,10 +215,8 @@ vector<std::pair<Int_t,Int_t>> DTTnPBaseAnalysis::tnpSelection()
 bool DTTnPBaseAnalysis::hasTrigger(const Int_t iTag) 
 {
 
-  if(m_hltFilterId < 0)
-    return false;
-  
-  return getXY<Float_t>(Mu_hlt_Dr,iTag,m_hltFilterId) < m_tnpConfig.tag_hltDrCut;
+  return m_tnpConfig.tag_useIsoHltPath ?
+    mu_firesIsoTrig->at(iTag) : mu_firesTrig->at(iTag);
   
 }
 
@@ -260,7 +225,7 @@ Int_t DTTnPBaseAnalysis::nMatchedCh(const Int_t iMu,
 {
 
   Int_t nMatchedCh = 0;
-  UInt_t chMask = Mu_stationMask->at(iMu);
+  UInt_t chMask = mu_trkMu_stationMask->at(iMu);
 
   for(int index = 0; index < 8; ++index)
     if ((chMask & 1<<index) && index != iCh-1)
@@ -269,4 +234,3 @@ Int_t DTTnPBaseAnalysis::nMatchedCh(const Int_t iMu,
   return nMatchedCh;
   
 }
-

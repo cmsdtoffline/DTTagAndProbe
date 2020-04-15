@@ -1,7 +1,7 @@
 #ifndef DTTnPBaseAnalysis_h
 #define DTTnPBaseAnalysis_h
 
-#include "DTAnalyzer.h"
+#include "DTNtupleBaseAnalyzer.h"
 #include "DTTnPConfig.h"
 
 #include "TLorentzVector.h"
@@ -18,17 +18,17 @@
 #include <regex>
 #include <map>
 
-class DTTnPBaseAnalysis : public DTAnalyzer 
+class DTTnPBaseAnalysis : public DTNtupleBaseAnalyzer 
 {
 
  public:
   DTTnPBaseAnalysis(const std::string & configFile);
   ~DTTnPBaseAnalysis() { };
   
-  void Loop() override;
+  virtual void Loop() override;
 
  protected:
-  void Init(TChain* chain) override { DTAnalyzer::Init(chain); };
+  virtual void Init(TChain* chain) override { DTNtupleBaseAnalyzer::Init(chain); };
 
   void pharseConfig(const std::string & configFile);
 
@@ -38,15 +38,12 @@ class DTTnPBaseAnalysis : public DTAnalyzer
 
   Int_t nMatchedCh(const Int_t iMu, const Int_t iCh);  
 
-  virtual void book();
+  virtual void book() override;
   virtual void fill(Int_t iMu) { };
-  virtual void endJob() { };
+  virtual void endJob() override { };
   
   TagAndProbeConfig m_tnpConfig;
   SampleConfig      m_sampleConfig;
-
-  std::vector<std::string> * m_triggerFilterNames;
-  Int_t m_hltFilterId;
 
   std::map<std::string, TH1*> m_plots;
   std::map<std::string, TEfficiency*> m_effs;

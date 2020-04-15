@@ -60,8 +60,7 @@ class TagAndProbeConfig
   Float_t tag_minPt;      
   
   Float_t tag_isoCut;
-  Float_t tag_hltDrCut;
-  std::string tag_hltFilter;
+  bool tag_useIsoHltPath;
   
   Float_t probe_minPt;      
   std::vector<Float_t> probe_maxAbsEta;
@@ -79,8 +78,6 @@ class TagAndProbeConfig
   Float_t passing_probe_maxTkSegDx;
   Float_t passing_probe_maxTkSegDy;
   Float_t passing_probe_maxTkSegDr;
-  
-  std::string hlt_path; 
   
   TagAndProbeConfig() {};
   
