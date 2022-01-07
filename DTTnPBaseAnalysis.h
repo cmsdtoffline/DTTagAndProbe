@@ -18,32 +18,30 @@
 #include <regex>
 #include <map>
 
-class DTTnPBaseAnalysis : public DTNtupleBaseAnalyzer 
+class DTTnPBaseAnalysis : public DTNtupleBaseAnalyzer
 {
+public:
+  DTTnPBaseAnalysis(const std::string &configFile);
+  ~DTTnPBaseAnalysis(){};
 
- public:
-  DTTnPBaseAnalysis(const std::string & configFile);
-  ~DTTnPBaseAnalysis() { };
-  
- protected:
-  void Init(TChain* chain) override { DTNtupleBaseAnalyzer::Init(chain); };
+protected:
+  void Init(TChain *chain) override { DTNtupleBaseAnalyzer::Init(chain); };
 
-  void pharseConfig(const std::string & configFile);
+  void parseConfig(const std::string &configFile);
 
-  std::vector<std::pair<Int_t,Int_t>> tnpSelection();
-  
+  std::vector<std::pair<Int_t, Int_t>> tnpSelection();
+
   bool hasTrigger(const Int_t iTag);
 
-  Int_t nMatchedCh(const Int_t iMu, const Int_t iCh);  
+  Int_t nMatchedCh(const Int_t iMu, const Int_t iCh);
 
   void book() override;
-  
-  TagAndProbeConfig m_tnpConfig;
-  SampleConfig      m_sampleConfig;
 
-  std::map<std::string, TH1*> m_plots;
-  std::map<std::string, TEfficiency*> m_effs;
-  
+  TagAndProbeConfig m_tnpConfig;
+  SampleConfig m_sampleConfig;
+
+  std::map<std::string, TH1 *> m_plots;
+  std::map<std::string, TEfficiency *> m_effs;
 };
 
 #endif
